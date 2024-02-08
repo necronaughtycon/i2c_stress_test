@@ -17,23 +17,22 @@
                 text_color: '#F7F7F7'
                 halign: 'center'
 
-        MDBoxLayout:
-            pos_hint: {'center_x': .5, 'center_y': .5}
-            adaptive_width: True
-            theme_bg_color: 'Custom'
-            md_bg_color: '#FFFFFF'
-            MenuButton:
-                text: 'ADC'
-            MenuButton:
-                text: 'MCP'
+        MDAnchorLayout:
+            MDBoxLayout:
+                orientation: 'vertical'
+                adaptive_size: True
+                MenuButton:
+                    text: 'ADC'
+                MenuButton:
+                    text: 'MCP'
 
 <MenuButton@MDButton>:
     text: ''
     style: 'elevated'
     theme_width: 'Custom'
     size_hint: None, None
-    size: dp(150), dp(150)
-    radius: 0
+    size: dp(150), dp(250)
+    radius: 4
     MDButtonText:
         text: root.text
         font_style: 'Title'
