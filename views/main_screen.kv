@@ -1,0 +1,33 @@
+# FILEPATH: /Users/tommy/Documents/i2c_test/views/main_screen.kv
+<MainScreen>:
+    MDScreen:
+        md_bg_color: '#222234'
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(100)
+            pos_hint: {'top': 1}
+            MDLabel:
+                text: 'Choose I2C Device'
+                font_style: 'Headline'
+                role: 'large'
+                halign: 'center'
+
+        MDGridLayout:
+            cols: 2
+            MenuButton:
+                text: 'ADC'
+            MenuButton:
+                text: 'MCP'
+
+<MenuButton@MDButton>:
+    text: ''
+    style: 'elevated'
+    theme_width: 'Custom'
+    size_hint: None, None
+    size: dp(48), dp(48)
+    radius: 0
+    MDButtonText:
+        text: root.text
+        font_style: 'Title'
+        role: 'medium'
+        pos_hint: {'center_x': .5, 'center_y': .5}
