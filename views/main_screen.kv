@@ -11,6 +11,19 @@
             MDGridLayout:
                 cols: 2
                 spacing: dp(30)
+                padding: dp(30)
+
+                ValueField:
+                    text: str(slider_0.value)
+                    icon: 'transfer-up'
+                    field: 'Requests'
+                    hint: 'Number of requests.'
+
+                ValueField:
+                    text: str(slider_1.value)
+                    icon: 'timer-refresh'
+                    field: 'Delay'
+                    hint: 'Delay between requests.'
 
                 MDSlider:
                     id: slider_0
@@ -23,24 +36,16 @@
                     MDSliderHandle:
 
 
-                MDTextField:
-                    text: str(slider_0.value)
-                    mode: 'filled'
-                    MDTextFieldLeadingIcon:
-                        icon: 'transfer-up'
-                    MDTextFieldHintText:
-                        text: 'Requests'
-                    MDTextFieldHelperText:
-                        text: 'Number of requests.'
-                        mode: 'persistent'
-
-                MDTextField:
-                    text: str(slider_1.value)
-                    mode: 'filled'
-                    MDTextFieldLeadingIcon:
-                        icon: 'timer-refresh'
-                    MDTextFieldHintText:
-                        text: 'Delay'
-                    MDTextFieldHelperText:
-                        text: 'Delay between requests.'
-                        mode: 'persistent'
+<ValueField@MDTextField>:
+    text: ''
+    icon: ''
+    field: ''
+    hint: ''
+    mode: 'outlined'
+    MDTextFieldHintText:
+        text: root.field
+    MDTextFieldHelperText:
+        text: root.hint
+        mode: 'persistent'
+    MDTextFieldTrailingIcon:
+        icon: root.icon
