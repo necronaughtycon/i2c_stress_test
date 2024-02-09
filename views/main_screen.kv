@@ -48,6 +48,19 @@
                     MDSliderHandle:
                     MDSliderValueLabel:
 
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(64)
+        pos_hint: {'bottom': 1}
+
+        MDRelativeLayout:
+
+            MDDivider:
+                size_hint_x: .95
+                color: '#F7F7F7'
+                opacity: .5
+                pos_hint: {'center_x': .5, 'top': 1}
+
 <ValueField@MDTextField>:
     text: ''
     icon: ''
