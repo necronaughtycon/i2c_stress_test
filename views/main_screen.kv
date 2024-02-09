@@ -8,32 +8,42 @@
             MDGridLayout:
                 cols: 2
                 spacing: dp(42)
-                padding: dp(77)
+                padding: (dp(150), dp(0), dp(150), dp(0))
                 adaptive_height: True
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
                 ValueField:
-                    text: str(request_slider.value)
+                    text: str(round(request_slider.value))
                     icon: 'transfer-up'
                     field: 'Requests'
-                    hint: 'Number of requests.'
                     
                 MDSlider:
                     id: request_slider
-                    range: (1, 50)
+                    range: (1, 1000)
                     MDSliderHandle:
+                    MDSliderValueLabel:
 
                 ValueField:
-                    text: str(delay_slider.value)
+                    text: str(round(frequency_slider.value))
                     icon: 'timer-refresh'
-                    field: 'Delay'
-                    hint: 'Delay between requests.'
+                    field: 'Frequency'
 
                 MDSlider:
-                    id: delay_slider
-                    range: (1, 50)
+                    id: frequency_slider
+                    range: (1, 60)
                     MDSliderHandle:
+                    MDSliderValueLabel:
 
+                ValueField:
+                    text: str(round(stored_slider.value))
+                    icon: 'folder-download'
+                    field: 'Stored'
+
+                MDSlider:
+                    id: stored_slider
+                    range: (1, 500)
+                    MDSliderHandle:
+                    MDSliderValueLabel:
 
 <ValueField@MDTextField>:
     text: ''
@@ -45,7 +55,7 @@
     size_hint_x: .3
     disabled: False
     theme_text_color: 'Custom'
-    text_color_normal: '#2ED96A'
+    text_color_normal: '#F7F7F7'
     MDTextFieldHintText:
         text: root.field
     MDTextFieldHelperText:
