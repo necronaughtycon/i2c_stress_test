@@ -16,6 +16,7 @@
                     text: str(round(request_slider.value))
                     icon: 'transfer-up'
                     field: 'Requests'
+                    on_text: request_slider.value = self.text if self.text.isdigit() else 0
                     
                 MDSlider:
                     id: request_slider
@@ -27,6 +28,7 @@
                     text: str(round(frequency_slider.value))
                     icon: 'timer-refresh'
                     field: 'Frequency'
+                    on_text: frequency_slider.value = self.text if self.text.isdigit() else 0
 
                 MDSlider:
                     id: frequency_slider
@@ -38,10 +40,11 @@
                     text: str(round(stored_slider.value))
                     icon: 'folder-download'
                     field: 'Stored'
+                    on_text: stored_slider.value = self.text if self.text.isdigit() else 0
 
                 MDSlider:
                     id: stored_slider
-                    range: (1, 500)
+                    range: (1, 2000)
                     MDSliderHandle:
                     MDSliderValueLabel:
 
@@ -51,11 +54,10 @@
     field: ''
     hint: ''
     mode: 'outlined'
-    halign: 'center'
-    size_hint_x: .3
-    disabled: False
     theme_text_color: 'Custom'
     text_color_normal: '#F7F7F7'
+    halign: 'center'
+    size_hint_x: .3
     MDTextFieldHintText:
         text: root.field
     MDTextFieldHelperText:
