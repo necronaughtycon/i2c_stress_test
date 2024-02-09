@@ -28,7 +28,7 @@
                     text: str(round(frequency_slider.value))
                     icon: 'timer-refresh'
                     field: 'Frequency'
-                    on_text: frequency_slider.value = self.text if self.text.isdigit() else 0
+                    on_text: frequency_slider.value = min(max(int(self.text), 1), 60) if self.text.isdigit() else 0
 
                 MDSlider:
                     id: frequency_slider
@@ -40,7 +40,7 @@
                     text: str(round(stored_slider.value))
                     icon: 'folder-download'
                     field: 'Stored'
-                    on_text: stored_slider.value = self.text if self.text.isdigit() else 0
+                    on_text: stored_slider.value = min(max(int(self.text), 1), 2000) if self.text.isdigit() else 0
 
                 MDSlider:
                     id: stored_slider
