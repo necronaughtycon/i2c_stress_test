@@ -1,6 +1,18 @@
 <MainScreen>:
     md_bg_color: '#222234'
 
+    MDTopAppBar:
+        type: 'small'
+        MDTopAppBarLeadingButtonContainer:
+            MDActionTopAppBarButton:
+                icon: 'arrow-left'
+        MDTopAppBarTitle:
+            text: 'ADC'
+            pos_hint: {"center_x": .5}
+        MDTopAppBarTrailingButtonContainer:
+            MDActionTopAppBarButton:
+                icon: 'help-circle'
+
     MDBoxLayout:
         orientation: 'vertical'
 
@@ -10,7 +22,7 @@
                 spacing: dp(42)
                 padding: (dp(150), dp(0), dp(150), dp(0))
                 adaptive_height: True
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                pos_hint: {'center_x': .5, 'center_y': .5}
 
                 ValueField:
                     text: str(round(request_slider.value))
@@ -48,18 +60,24 @@
                     MDSliderHandle:
                     MDSliderValueLabel:
 
-    MDBoxLayout:
-        size_hint_y: None
-        height: dp(64)
-        pos_hint: {'bottom': 1}
+    # MDBoxLayout:
+    #     size_hint_y: None
+    #     height: dp(64)
+    #     pos_hint: {'bottom': 1}
 
-        MDRelativeLayout:
+        # MDIconButton:
+        #     id: back_btn
+        #     icon: 'arrow-left'
+        #     style: 'standard'
+        #     size_hint: None, None
+        #     size: dp(64), dp(64)
 
-            MDDivider:
-                size_hint_x: .95
-                color: '#F7F7F7'
-                opacity: .5
-                pos_hint: {'center_x': .5, 'top': 1}
+        # MDRelativeLayout:
+        #     MDDivider:
+        #         size_hint_x: .95
+        #         color: '#F7F7F7'
+        #         opacity: .5
+        #         pos_hint: {'center_x': .5, 'top': 1}
 
 <ValueField@MDTextField>:
     text: ''
