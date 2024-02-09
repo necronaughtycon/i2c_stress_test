@@ -1,29 +1,36 @@
-# FILEPATH: /Users/tommy/Documents/i2c_test/views/main_screen.kv
 <MainScreen>:
 
-    MDAnchorLayout:
-        orientation: 'vertical'
+    MDScreen:
         md_bg_color: '#222234'
 
         MDBoxLayout:
-            orientation: 'vertical'
-            adaptive_size: True
-            spacing: dp(60)
-            MenuButton:
-                text: 'ADC'
-            MenuButton:
-                text: 'MCP'
 
-<MenuButton@MDCard>:
-    text: ''
-    style: 'elevated'
-    theme_width: 'Custom'
-    size_hint: None, None
-    size: dp(200), dp(50)
-    radius: 4
-    MDRelativeLayout:
-        MDLabel:
-            text: root.text
-            font_style: 'Display'
-            role: 'medium'
-            halign: 'center'
+            MDSlider:
+                id: slider
+                min: 0
+                max: 50
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                MDSliderHandle:
+
+            MDTextField:
+                text: str(slider.value)
+                halign: 'center'
+
+
+
+                # MDSliderValueLabel:
+
+# MDScreen:
+#     md_bg_color: '#222234'
+
+#     MDBoxLayout:
+#         orientation: 'vertical'
+
+#         MDSlider:
+#             id: slider
+#             min: 0
+#             max: 50
+
+#         MDTextField:
+#             text: str(slider.value)
+#             halign: 'center'

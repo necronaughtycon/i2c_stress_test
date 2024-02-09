@@ -6,3 +6,4 @@ This program requires the KivyMD development version 2.0.1, to install use the f
 
 ```bash
 pip3 install https://github.com/kivymd/KivyMD/archive/master.zip
+```

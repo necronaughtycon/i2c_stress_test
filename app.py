@@ -26,7 +26,8 @@ class MainScreen(MDScreen):
 class ConfigScreen(MDScreen):
     test_type = StringProperty("")
 
-class TestApp(MDApp):
+class StressTestApp(MDApp):
+    ''' Main application class. '''
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -34,20 +35,24 @@ class TestApp(MDApp):
 
 
     def build(self):
+        ''' Create the application. '''
         self.theme_cls.theme_style = "Dark"  # Optional: Use dark theme
         self.setup_screens()
         return self.sm
 
     def screen_config(self):
+        ''' Define the screens and their kv files. '''
         return {
             'main_screen': {'path': 'main_screen.kv', 'class': MainScreen},
             'config_screen': {'path': 'config_screen.kv', 'class': ConfigScreen}
         }
 
     def load_kv_file(self, info):
+        ''' Load the kv file for a screen. '''
         Builder.load_file(f'views/{info["path"]}')
 
     def setup_screens(self):
+        ''' Create the screens and add them to the screen manager. '''
         screens = self.screen_config()
         for name, info in screens.items():
             self.load_kv_file(info)
@@ -55,4 +60,4 @@ class TestApp(MDApp):
 
 
 if __name__ == "__main__":
-    TestApp().run()
+    StressTestApp().run()
