@@ -6,8 +6,8 @@ from kivy.uix.screenmanager import (
     ScreenManager,
     NoTransition
 )
+from kivy.clock import Clock
 
-import time
 # import busio
 # import board
 # from adafruit_ads1x15.ads1115 import ADS1115 as ADS
@@ -23,8 +23,10 @@ import time
 class MainScreen(MDScreen):
     pass
 
+
 class ConfigScreen(MDScreen):
-    test_type = StringProperty("")
+    test_type = StringProperty('')
+
 
 class StressTestApp(MDApp):
     ''' Main application class. '''
@@ -36,7 +38,7 @@ class StressTestApp(MDApp):
 
     def build(self):
         ''' Create the application. '''
-        self.theme_cls.theme_style = "Dark"  # Optional: Use dark theme
+        self.theme_cls.theme_style = 'Dark'
         self.setup_screens()
         return self.sm
 
@@ -59,5 +61,5 @@ class StressTestApp(MDApp):
             self.sm.add_widget(info['class'](name=name))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     StressTestApp().run()

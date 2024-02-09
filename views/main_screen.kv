@@ -1,44 +1,38 @@
 <MainScreen>:
+    md_bg_color: '#222234'
 
-    MDScreen:
-        md_bg_color: '#222234'
+    MDBoxLayout:
+        orientation: 'vertical'
 
-        MDBoxLayout:
-            orientation: 'vertical'
-            theme_bg_color: 'Custom'
-            md_bg_color: '#6A1B9A'
+        MDRelativeLayout:
+            MDGridLayout:
+                cols: 2
+                spacing: dp(30)
+                padding: dp(30)
+                theme_bg_color: 'Custom'
+                md_bg_color: '#FF0000'
+                adaptive_height: True
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-            MDRelativeLayout:
-                MDGridLayout:
-                    cols: 2
-                    adaptive_height: True
-                    spacing: dp(30)
-                    padding: dp(30)
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    theme_bg_color: 'Custom'
-                    md_bg_color: '#FF4081'
+                ValueField:
+                    text: str(request_slider.value)
+                    icon: 'transfer-up'
+                    field: 'Requests'
+                    hint: 'Number of requests.'
 
-                    ValueField:
-                        text: str(slider_0.value)
-                        icon: 'transfer-up'
-                        field: 'Requests'
-                        hint: 'Number of requests.'
+                ValueField:
+                    text: str(delay_slider.value)
+                    icon: 'timer-refresh'
+                    field: 'Delay'
+                    hint: 'Delay between requests.'
 
-                    ValueField:
-                        text: str(slider_1.value)
-                        icon: 'timer-refresh'
-                        field: 'Delay'
-                        hint: 'Delay between requests.'
+                ValueSlider:
+                    id: request_slider
+                    range: (1, 50)
 
-                    MDSlider:
-                        id: slider_0
-                        range: (1, 50)
-                        MDSliderHandle:
-
-                    MDSlider:
-                        id: slider_1
-                        range: (1, 50)
-                        MDSliderHandle:
+                ValueSlider:
+                    id: delay_slider
+                    range: (1, 50)
 
 
 <ValueField@MDTextField>:
@@ -54,3 +48,7 @@
         mode: 'persistent'
     MDTextFieldTrailingIcon:
         icon: root.icon
+
+<ValueSlider@MDSlider>:
+    range: (0, 1)
+    MDSliderHandle:
