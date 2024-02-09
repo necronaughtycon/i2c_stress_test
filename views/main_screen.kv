@@ -7,30 +7,10 @@
 
             MDSlider:
                 id: slider
-                min: 0
-                max: 50
+                range: (1, 50)
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 MDSliderHandle:
 
             MDTextField:
                 text: str(slider.value)
                 halign: 'center'
-
-
-
-                # MDSliderValueLabel:
-
-# MDScreen:
-#     md_bg_color: '#222234'
-
-#     MDBoxLayout:
-#         orientation: 'vertical'
-
-#         MDSlider:
-#             id: slider
-#             min: 0
-#             max: 50
-
-#         MDTextField:
-#             text: str(slider.value)
-#             halign: 'center'
