@@ -5,13 +5,24 @@
 
         MDBoxLayout:
             orientation: 'vertical'
+            adaptive_height: True
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            MDSlider:
-                id: slider
-                range: (1, 50)
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                MDSliderHandle:
+            MDGridLayout:
+                cols: 2
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    MDSlider:
+                        id: slider
+                        range: (1, 50)
+                        MDSliderHandle:
 
-            MDTextField:
-                text: str(slider.value)
-                halign: 'center'
+                    MDTextField:
+                        text: str(slider.value)
+                        mode: 'filled'
+                        MDTextFieldHintText:
+                            text: 'Requests'
+                        MDTextFieldHelperText:
+                            text: 'Set the number of requests.'
+                            mode: 'persistent'
+                        MDTextFieldTrailingIcon:
+                            icon: 'mdi-pulse'
