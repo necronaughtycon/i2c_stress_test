@@ -7,22 +7,40 @@
             orientation: 'vertical'
             adaptive_height: True
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
             MDGridLayout:
                 cols: 2
-                MDBoxLayout:
-                    orientation: 'vertical'
-                    MDSlider:
-                        id: slider
-                        range: (1, 50)
-                        MDSliderHandle:
+                spacing: dp(30)
 
-                    MDTextField:
-                        text: str(slider.value)
-                        mode: 'filled'
-                        MDTextFieldHintText:
-                            text: 'Requests'
-                        MDTextFieldHelperText:
-                            text: 'Set the number of requests.'
-                            mode: 'persistent'
-                        MDTextFieldTrailingIcon:
-                            icon: 'mdi-pulse'
+                MDSlider:
+                    id: slider_0
+                    range: (1, 50)
+                    MDSliderHandle:
+
+                MDSlider:
+                    id: slider_1
+                    range: (1, 50)
+                    MDSliderHandle:
+
+
+                MDTextField:
+                    text: str(slider_0.value)
+                    mode: 'filled'
+                    MDTextFieldLeadingIcon:
+                        icon: 'transfer-up'
+                    MDTextFieldHintText:
+                        text: 'Requests'
+                    MDTextFieldHelperText:
+                        text: 'Number of requests.'
+                        mode: 'persistent'
+
+                MDTextField:
+                    text: str(slider_1.value)
+                    mode: 'filled'
+                    MDTextFieldLeadingIcon:
+                        icon: 'timer-refresh'
+                    MDTextFieldHintText:
+                        text: 'Delay'
+                    MDTextFieldHelperText:
+                        text: 'Delay between requests.'
+                        mode: 'persistent'
