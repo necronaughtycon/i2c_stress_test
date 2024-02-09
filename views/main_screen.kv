@@ -7,8 +7,8 @@
         MDRelativeLayout:
             MDGridLayout:
                 cols: 2
-                spacing: dp(30)
-                padding: dp(30)
+                spacing: dp(42)
+                padding: dp(77)
                 adaptive_height: True
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
@@ -17,17 +17,17 @@
                     icon: 'transfer-up'
                     field: 'Requests'
                     hint: 'Number of requests.'
+                    
+                MDSlider:
+                    id: request_slider
+                    range: (1, 50)
+                    MDSliderHandle:
 
                 ValueField:
                     text: str(delay_slider.value)
                     icon: 'timer-refresh'
                     field: 'Delay'
                     hint: 'Delay between requests.'
-
-                MDSlider:
-                    id: request_slider
-                    range: (1, 50)
-                    MDSliderHandle:
 
                 MDSlider:
                     id: delay_slider
@@ -40,8 +40,16 @@
     icon: ''
     field: ''
     hint: ''
+    font_style: 'Title'
+    role: 'medium'
     mode: 'outlined'
     halign: 'center'
+    size_hint_x: .3
+    disabled: False
+    theme_text_color: 'Custom'
+    text_color: '#2ED96A'
+    disabled_text_color: '#2ED96A'
+    text_color_disabled: '#2ED96A'
     MDTextFieldHintText:
         text: root.field
     MDTextFieldHelperText:
