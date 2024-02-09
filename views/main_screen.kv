@@ -1,64 +1,74 @@
 <MainScreen>:
-    md_bg_color: '#222234'
-
-    MDTopAppBar:
-        type: 'small'
-        MDTopAppBarLeadingButtonContainer:
-            MDActionTopAppBarButton:
-                icon: 'arrow-left'
-        MDTopAppBarTitle:
-            text: 'ADC'
-            pos_hint: {"center_x": .5}
-        MDTopAppBarTrailingButtonContainer:
-            MDActionTopAppBarButton:
-                icon: 'help-circle'
+    # md_bg_color: '#222234'
+    # md_bg_color: self.theme_cls.backgroundColor
+    theme_bg_color: 'Primary'
+    md_bg_color: self.theme_cls.backgroundColor
 
     MDBoxLayout:
         orientation: 'vertical'
+        padding: dp(12)
 
-        MDRelativeLayout:
-            MDGridLayout:
-                cols: 2
-                spacing: dp(42)
-                padding: (dp(150), dp(0), dp(150), dp(0))
-                adaptive_height: True
-                pos_hint: {'center_x': .5, 'center_y': .5}
+        MDTopAppBar:
+            type: 'small'
+            md_bg_color: self.theme_cls.secondaryContainerColor
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            MDTopAppBarLeadingButtonContainer:
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left'
+            MDTopAppBarTitle:
+                text: 'ADC'
+                font_style: 'Title'
+                role: 'large'
+                pos_hint: {'center_x': .5}
+            MDTopAppBarTrailingButtonContainer:
+                MDActionTopAppBarButton:
+                    icon: 'help-circle'
 
-                ValueField:
-                    text: str(round(request_slider.value))
-                    icon: 'transfer-up'
-                    field: 'Requests'
-                    on_text: request_slider.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
-                    
-                MDSlider:
-                    id: request_slider
-                    range: (1, 1000)
-                    MDSliderHandle:
-                    MDSliderValueLabel:
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDRelativeLayout:
+                MDGridLayout:
+                    cols: 2
+                    spacing: dp(42)
+                    padding: (dp(150), dp(0), dp(150), dp(0))
+                    adaptive_height: True
+                    pos_hint: {'center_x': .5, 'center_y': .5}
 
-                ValueField:
-                    text: str(round(frequency_slider.value))
-                    icon: 'timer-refresh'
-                    field: 'Frequency'
-                    on_text: frequency_slider.value = min(max(int(self.text), 1), 60) if self.text.isdigit() else 0
+                    ValueField:
+                        text: str(round(request_slider.value))
+                        icon: 'transfer-up'
+                        field: 'Requests'
+                        on_text: request_slider.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
+                        
+                    MDSlider:
+                        id: request_slider
+                        range: (1, 1000)
+                        MDSliderHandle:
+                        MDSliderValueLabel:
 
-                MDSlider:
-                    id: frequency_slider
-                    range: (1, 60)
-                    MDSliderHandle:
-                    MDSliderValueLabel:
+                    ValueField:
+                        text: str(round(frequency_slider.value))
+                        icon: 'timer-refresh'
+                        field: 'Frequency'
+                        on_text: frequency_slider.value = min(max(int(self.text), 1), 60) if self.text.isdigit() else 0
 
-                ValueField:
-                    text: str(round(stored_slider.value))
-                    icon: 'folder-download'
-                    field: 'Stored'
-                    on_text: stored_slider.value = min(max(int(self.text), 1), 2000) if self.text.isdigit() else 0
+                    MDSlider:
+                        id: frequency_slider
+                        range: (1, 60)
+                        MDSliderHandle:
+                        MDSliderValueLabel:
 
-                MDSlider:
-                    id: stored_slider
-                    range: (1, 2000)
-                    MDSliderHandle:
-                    MDSliderValueLabel:
+                    ValueField:
+                        text: str(round(stored_slider.value))
+                        icon: 'folder-download'
+                        field: 'Stored'
+                        on_text: stored_slider.value = min(max(int(self.text), 1), 2000) if self.text.isdigit() else 0
+
+                    MDSlider:
+                        id: stored_slider
+                        range: (1, 2000)
+                        MDSliderHandle:
+                        MDSliderValueLabel:
 
     # MDBoxLayout:
     #     size_hint_y: None
