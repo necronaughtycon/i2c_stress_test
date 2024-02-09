@@ -9,8 +9,6 @@
                 cols: 2
                 spacing: dp(30)
                 padding: dp(30)
-                theme_bg_color: 'Custom'
-                md_bg_color: '#FF0000'
                 adaptive_height: True
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
@@ -26,13 +24,15 @@
                     field: 'Delay'
                     hint: 'Delay between requests.'
 
-                ValueSlider:
+                MDSlider:
                     id: request_slider
                     range: (1, 50)
+                    MDSliderHandle:
 
-                ValueSlider:
+                MDSlider:
                     id: delay_slider
                     range: (1, 50)
+                    MDSliderHandle:
 
 
 <ValueField@MDTextField>:
@@ -48,7 +48,3 @@
         mode: 'persistent'
     MDTextFieldTrailingIcon:
         icon: root.icon
-
-<ValueSlider@MDSlider>:
-    range: (0, 1)
-    MDSliderHandle:
