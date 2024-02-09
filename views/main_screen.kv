@@ -16,7 +16,7 @@
                     text: str(round(request_slider.value))
                     icon: 'transfer-up'
                     field: 'Requests'
-                    on_text: request_slider.value = self.text if self.text.isdigit() else 0
+                    on_text: request_slider.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
                     
                 MDSlider:
                     id: request_slider
