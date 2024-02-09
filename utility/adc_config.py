@@ -4,6 +4,16 @@
 ====================================
                 ADC
 ====================================
+Usage Example:
+--------------
+
+from adc_config import ADC
+
+# Create an instance of the ADC class with custom amount and held values
+adc = ADC(amount=100, held=10)
+
+# Now you can use the adc instance to request data
+data = adc.request_data()
 '''
 
 from collections import deque
@@ -11,8 +21,6 @@ from collections import deque
 
 class ADC:
     '''
-    ADC
-    ---
     This class is used to interface with the ADS1115 Analog-to-Digital Converter.
     '''
     _warnings = {'board': False, 'busio': False, 'ads': False}
