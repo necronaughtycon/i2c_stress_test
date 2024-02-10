@@ -93,5 +93,13 @@ class StressTestApp(MDApp):
             self.adc_requests = 0
             self.adc_stored.clear()
 
+    def show_adc_dialog(self):
+        ''' Display a dialog with live statistics for the ongoing ADC test. '''
+        MDDialog(
+            MDDialogHeadLineText(
+                text='Live ADC Test Statistics'
+            ),  
+        )
+
 if __name__ == '__main__':
     StressTestApp().run()
