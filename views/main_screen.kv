@@ -6,22 +6,6 @@
         orientation: 'vertical'
         padding: dp(12)
 
-        MDCard:
-            style: 'elevated'
-            focus_behavior: False
-            pos_hint: {'top': 1}
-            size_hint_y: None
-            height: dp(64)
-
-            MDIconButton:
-                icon: 'arrow-left'
-                pos_hint: {'center_y': .5}
-
-            MDLabel:
-                text: app.current_theme
-                halign: 'center'
-
-
         MDBoxLayout:
             orientation: 'vertical'
             MDRelativeLayout:
@@ -67,6 +51,12 @@
                         range: (1, 2000)
                         MDSliderHandle:
                         MDSliderValueLabel:
+
+        MDBoxLayout:
+            md_bg_color: app.theme_cls.primaryContainerColor
+            size_hint_y: None
+            height: dp(64)
+            pos_hint: {'bottom': 1}
 
     # MDBoxLayout:
     #     size_hint_y: None

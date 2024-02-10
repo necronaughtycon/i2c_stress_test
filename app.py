@@ -32,21 +32,22 @@ class ConfigScreen(MDScreen):
 class StressTestApp(MDApp):
     ''' Main application class. '''
 
-    current_theme = StringProperty('')
+    # current_theme = StringProperty('')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.sm = ScreenManager(transition=NoTransition())
-        self.color_index = 0
-        self.color_keys = list(hex_colormap.keys())
-        self.current_theme = self.color_keys[self.color_index].capitalize()
+        # self.color_index = 0
+        # self.color_keys = list(hex_colormap.keys())
+        # self.current_theme = self.color_keys[self.color_index].capitalize()
 
     def build(self):
         ''' Create the application. '''
         self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = self.color_keys[self.color_index].capitalize()
+        self.theme_cls.primary_palette = 'Darkblue'
+        # self.theme_cls.primary_palette = self.color_keys[self.color_index].capitalize()
         self.setup_screens()
-        Clock.schedule_interval(self.change_theme_color, .5)
+        # Clock.schedule_interval(self.change_theme_color, .5)
         return self.sm
     
     def change_theme_color(self, dt):
