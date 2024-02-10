@@ -4,16 +4,22 @@
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: dp(10)
+        padding: dp(12)
 
         MDCard:
             style: 'elevated'
+            focus_behavior: False
             pos_hint: {'top': 1}
-            adaptive_height: True
-            MDRelativeLayout:
-                MDLabel:
-                    text: app.current_theme
-                    halign: 'center'
+            size_hint_y: None
+            height: dp(64)
+
+            MDIconButton:
+                icon: 'arrow-left'
+                pos_hint: {'center_y': .5}
+
+            MDLabel:
+                text: app.current_theme
+                halign: 'center'
 
 
         MDBoxLayout:
