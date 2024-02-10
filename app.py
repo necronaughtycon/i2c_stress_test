@@ -6,6 +6,8 @@ from kivy.uix.screenmanager import (
     ScreenManager,
     NoTransition
 )
+from kivy.clock import Clock
+from kivy.utils import hex_colormap
 
 import time
 # import busio
@@ -32,14 +34,22 @@ class StressTestApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.sm = ScreenManager(transition=NoTransition())
+        self.color_index = 0
+        self.color_keys = list(hex_colormap.keys())
 
 
     def build(self):
         ''' Create the application. '''
         self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'Midnightblue'
+        self.theme_cls.primary_palette = self.color_keys[self.color_index].capitalize()
         self.setup_screens()
+        Clock.schedule_interval(self.change_theme_color, 10)
         return self.sm
+
+    def change_theme_color(self, dt):
+        ''' Changes the theme color every 10 seconds. '''
+        self.color_index = (self.color_index + 1) % len(self.color_keys)
+        self.theme_cls.primary_palette = self.color_keys[self.color_index].capitalize()
 
     def screen_config(self):
         ''' Define the screens and their kv files. '''
