@@ -63,10 +63,9 @@ class StressTestApp(MDApp):
             self.load_kv_file(info)
             self.sm.add_widget(info['class'](name=name))
 
-    def start_adc_test(self):
-        value = self.sm.current_screen.ids
-        requests = str(int(value.adc_requests.value))
-        print(requests)
+    def start_adc_test(self, requests, frequency, stored):
+        print(requests, frequency, stored)
+
 
 if __name__ == '__main__':
     StressTestApp().run()

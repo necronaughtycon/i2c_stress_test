@@ -80,7 +80,7 @@
                 height: dp(48)
                 size_hint_x: 1
                 radius: 7
-                on_press: app.start_adc_test()
+                on_press: app.start_adc_test(adc_requests.value, adc_frequency.value, adc_stored.value)
                 MDButtonText:
                     text: 'START'
                     font_style: 'Title'
