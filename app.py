@@ -2,7 +2,7 @@ import time
 from collections import deque
 
 from kivy.lang import Builder
-from kivy.properties import StringProperty, NumericProperty, ListProperty
+from kivy.properties import StringProperty, NumericProperty, ListProperty, ObjectProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 from kivy.uix.screenmanager import ScreenManager, NoTransition
@@ -34,7 +34,7 @@ class StressTestApp(MDApp):
     ''' Main application class. '''
 
     adc_requests = NumericProperty(0)
-    adc_stored = ListProperty([])
+    adc_stored = NumericProperty(0)
     adc_task = None
 
     def __init__(self, **kwargs):
@@ -72,19 +72,18 @@ class StressTestApp(MDApp):
         ''' Test to simulate ADC readings. '''
         self.stop_adc_test()  # Stop any existing ADC test.
         self.adc_requests = int(requests)
-        self.adc_stored = deque(maxlen=int(stored))
-        self.adc_task = Clock.schedule_interval(lambda dt: self.handle_adc_data(), int(frequency))
+        data_held = deque(maxlen=int(stored))
+        self.adc_task = Clock.schedule_interval(lambda dt: self.handle_adc_data(data_held), int(frequency))
 
-    def handle_adc_data(self):
+    def handle_adc_data(self, data_held):
         ''' Handle the ADC data. '''
         requests_sent = 0
         for request in range(self.adc_requests):
             # Do something (print a number for now).
             requests_sent += 1
-            print(f'ADC request {requests_sent} sent.')
-            self.adc_stored.append(self.adc_requests)
-        else:
-            self.stop_adc_test()
+            print(requests_sent)
+            data_held.append(requests_sent)
+        print(f'\nData held: {len(data_held)}\n')
 
     def stop_adc_test(self):
         ''' Stop and unschedule the ADC test. '''
