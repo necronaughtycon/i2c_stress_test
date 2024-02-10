@@ -44,7 +44,7 @@ class StressTestApp(MDApp):
     def build(self):
         ''' Create the application. '''
         self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'Darkblue'
+        self.theme_cls.primary_palette = 'Ghostwhite'
         # self.theme_cls.primary_palette = self.color_keys[self.color_index].capitalize()
         self.setup_screens()
         # Clock.schedule_interval(self.change_theme_color, .5)

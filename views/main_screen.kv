@@ -7,6 +7,39 @@
         padding: dp(12)
 
         MDBoxLayout:
+            md_bg_color: app.theme_cls.secondaryContainerColor
+            size_hint_y: None
+            height: dp(64)
+            radius: 7
+            pos_hint: {'top': 1}
+            MDButton:
+                id: adc_btn
+                style: 'text'
+                theme_width: 'Custom'
+                size_hint_y: None
+                height: dp(64)
+                size_hint_x: 1
+                radius: 0
+                MDButtonText:
+                    text: 'ADC'
+                    font_style: 'Headline'
+                    role: 'small'
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+            MDButton:
+                id: mcp_btn
+                style: 'text'
+                theme_width: 'Custom'
+                size_hint_y: None
+                height: dp(64)
+                size_hint_x: 1
+                radius: 0
+                MDButtonText:
+                    text: 'MCP'
+                    font_style: 'Headline'
+                    role: 'small'
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+
+        MDBoxLayout:
             orientation: 'vertical'
             MDRelativeLayout:
                 MDGridLayout:
@@ -52,11 +85,6 @@
                         MDSliderHandle:
                         MDSliderValueLabel:
 
-        MDBoxLayout:
-            md_bg_color: app.theme_cls.primaryContainerColor
-            size_hint_y: None
-            height: dp(64)
-            pos_hint: {'bottom': 1}
 
     # MDBoxLayout:
     #     size_hint_y: None
