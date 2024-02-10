@@ -7,37 +7,23 @@
         padding: dp(12)
 
         MDBoxLayout:
-            md_bg_color: app.theme_cls.secondaryContainerColor
             size_hint_y: None
-            height: dp(64)
+            height: dp(48)
             radius: 7
             pos_hint: {'top': 1}
-            MDButton:
+            spacing: dp(48)
+            Widget:
+                size_hint_x: .1
+            NavBtn:
                 id: adc_btn
-                style: 'text'
-                theme_width: 'Custom'
-                size_hint_y: None
-                height: dp(64)
-                size_hint_x: 1
-                radius: 0
-                MDButtonText:
-                    text: 'ADC'
-                    font_style: 'Headline'
-                    role: 'small'
-                    pos_hint: {'center_x': .5, 'center_y': .5}
-            MDButton:
+                text: 'ADC'
+                height: dp(48)
+            NavBtn:
                 id: mcp_btn
-                style: 'text'
-                theme_width: 'Custom'
-                size_hint_y: None
-                height: dp(64)
-                size_hint_x: 1
-                radius: 0
-                MDButtonText:
-                    text: 'MCP'
-                    font_style: 'Headline'
-                    role: 'small'
-                    pos_hint: {'center_x': .5, 'center_y': .5}
+                text: 'MCP'
+                height: dp(48)
+            Widget:
+                size_hint_x: .1
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -45,7 +31,7 @@
                 MDGridLayout:
                     cols: 2
                     spacing: dp(42)
-                    padding: (dp(150), dp(0), dp(150), dp(0))
+                    padding: (dp(125), dp(0), dp(125), dp(0))
                     adaptive_height: True
                     pos_hint: {'center_x': .5, 'center_y': .5}
 
@@ -86,24 +72,17 @@
                         MDSliderValueLabel:
 
 
-    # MDBoxLayout:
-    #     size_hint_y: None
-    #     height: dp(64)
-    #     pos_hint: {'bottom': 1}
-
-        # MDIconButton:
-        #     id: back_btn
-        #     icon: 'arrow-left'
-        #     style: 'standard'
-        #     size_hint: None, None
-        #     size: dp(64), dp(64)
-
-        # MDRelativeLayout:
-        #     MDDivider:
-        #         size_hint_x: .95
-        #         color: '#F7F7F7'
-        #         opacity: .5
-        #         pos_hint: {'center_x': .5, 'top': 1}
+<NavBtn@MDButton>:
+    text: ''
+    style: 'elevated'
+    theme_width: 'Custom'
+    size_hint_y: None
+    radius: 0
+    MDButtonText:
+        text: root.text
+        font_style: 'Title'
+        role: 'large'
+        pos_hint: {'center_x': .5, 'center_y': .5}
 
 <ValueField@MDTextField>:
     text: ''
