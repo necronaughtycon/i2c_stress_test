@@ -65,7 +65,8 @@ class StressTestApp(MDApp):
 
     def start_adc_test(self):
         value = self.sm.current_screen.ids
-        print(value['request_slider'].value)
+        requests = str(int(value.adc_requests.value))
+        print(requests)
 
 if __name__ == '__main__':
     StressTestApp().run()
