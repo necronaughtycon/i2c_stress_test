@@ -36,17 +36,19 @@
                     pos_hint: {'center_x': .5, 'center_y': .5}
 
                     ValueField:
-                        text: str(round(request_slider.value))
+                        id: adc_requests
+                        text: str(round(requests_slider.value))
                         icon: 'transfer-up'
                         field: 'Requests'
-                        on_text: request_slider.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
+                        on_text: requests_slider.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
                     MDSlider:
-                        id: request_slider
+                        id: requests_slider
                         range: (1, 1000)
                         MDSliderHandle:
                         MDSliderValueLabel:
 
                     ValueField:
+                        id: adc_frequency
                         text: str(round(frequency_slider.value))
                         icon: 'timer-refresh'
                         field: 'Frequency'
@@ -58,6 +60,7 @@
                         MDSliderValueLabel:
 
                     ValueField:
+                        id: adc_stored
                         text: str(round(stored_slider.value))
                         icon: 'folder-download'
                         field: 'Stored'
@@ -80,6 +83,7 @@
                 height: dp(48)
                 size_hint_x: 1
                 radius: 7
+                on_press: app.start_adc_test()
                 MDButtonText:
                     text: 'START'
                     font_style: 'Title'

@@ -7,7 +7,14 @@ from kivymd.uix.screen import MDScreen
 from kivy.uix.screenmanager import ScreenManager, NoTransition
 from kivy.clock import Clock
 from kivy.utils import hex_colormap
-
+from kivymd.uix.dialog import (
+    MDDialog,
+    MDDialogIcon,
+    MDDialogHeadlineText,
+    MDDialogSupportingText,
+    MDDialogButtonContainer,
+    MDDialogContentContainer
+)
 # from adafruit_mcp230xx.mcp23017 import MCP23017
 # from digitalio import Direction
 # Initialize I2C bus
@@ -28,9 +35,6 @@ class StressTestApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.sm = ScreenManager(transition=NoTransition())
-        # self.color_index = 0
-        # self.color_keys = list(hex_colormap.keys())
-        # self.current_theme = self.color_keys[self.color_index].capitalize()
 
     def build(self):
         ''' Create the application. '''
@@ -59,6 +63,9 @@ class StressTestApp(MDApp):
             self.load_kv_file(info)
             self.sm.add_widget(info['class'](name=name))
 
+    def start_adc_test(self):
+        value = self.sm.current_screen.ids
+        print(value['request_slider'].value)
 
 if __name__ == '__main__':
     StressTestApp().run()
