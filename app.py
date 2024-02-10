@@ -1,7 +1,8 @@
 import time
+from collections import deque
 
 from kivy.lang import Builder
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty, ListProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 from kivy.uix.screenmanager import ScreenManager, NoTransition
@@ -31,6 +32,9 @@ class MCPTestScreen(MDScreen):
 
 class StressTestApp(MDApp):
     ''' Main application class. '''
+
+    adc_requests = NumericProperty(0)
+    adc_stored = ListProperty([])
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -64,7 +68,19 @@ class StressTestApp(MDApp):
             self.sm.add_widget(info['class'](name=name))
 
     def start_adc_test(self, requests, frequency, stored):
-        print(requests, frequency, stored)
+        ''' Test to simulate ADC readings. '''
+        Clock.unschedule(self.handle_adc_data(requests, stored))
+        for _ in range(requests-1):
+            Clock.schedule_once(lambda x: self.handle_adc_data(requests, stored), frequency)
+
+    def handle_adc_data(self, requests, stored):
+        ''' Handle the ADC data. '''
+        received = 0
+        stored_data = deque(maxlen=stored)
+        for _ in range(requests-1):
+            received += 1
+            stored_data.append(received)
+        print(f'Stored {len(stored_data)} data points.')
 
 
 if __name__ == '__main__':
