@@ -1,10 +1,9 @@
 <MainScreen>:
-    # md_bg_color: '#222234'
     md_bg_color: self.theme_cls.backgroundColor
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: dp(12)
+        padding: dp(24)
 
         MDBoxLayout:
             size_hint_y: None
@@ -40,7 +39,6 @@
                         icon: 'transfer-up'
                         field: 'Requests'
                         on_text: request_slider.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
-                        
                     MDSlider:
                         id: request_slider
                         range: (1, 1000)
@@ -52,7 +50,6 @@
                         icon: 'timer-refresh'
                         field: 'Frequency'
                         on_text: frequency_slider.value = min(max(int(self.text), 1), 60) if self.text.isdigit() else 0
-
                     MDSlider:
                         id: frequency_slider
                         range: (1, 60)
@@ -64,12 +61,28 @@
                         icon: 'folder-download'
                         field: 'Stored'
                         on_text: stored_slider.value = min(max(int(self.text), 1), 2000) if self.text.isdigit() else 0
-
                     MDSlider:
                         id: stored_slider
                         range: (1, 2000)
                         MDSliderHandle:
                         MDSliderValueLabel:
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            pos_hint: {'bottom': 1}
+            padding: dp(250), dp(0)
+            MDButton:
+                style: 'elevated'
+                theme_width: 'Custom'
+                size_hint_y: None
+                height: dp(48)
+                size_hint_x: 1
+                radius: 7
+                MDButtonText:
+                    text: 'START'
+                    font_style: 'Title'
+                    role: 'large'
+                    pos_hint: {'center_x': .5, 'center_y': .5}
 
 
 <NavBtn@MDButton>:
@@ -80,8 +93,8 @@
     radius: 0
     MDButtonText:
         text: root.text
-        font_style: 'Title'
-        role: 'large'
+        font_style: 'Headline'
+        role: 'small'
         pos_hint: {'center_x': .5, 'center_y': .5}
 
 <ValueField@MDTextField>:
