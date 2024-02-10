@@ -2,7 +2,10 @@ import time
 from collections import deque
 
 from kivy.lang import Builder
-from kivy.properties import StringProperty, NumericProperty, ListProperty, ObjectProperty
+from kivy.properties import (
+    StringProperty, NumericProperty,
+    DictProperty, ListProperty, ObjectProperty
+)
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 from kivy.uix.screenmanager import ScreenManager, NoTransition
@@ -34,7 +37,7 @@ class StressTestApp(MDApp):
     ''' Main application class. '''
 
     adc_requests = NumericProperty(0)
-    adc_stored = NumericProperty(0)
+    adc_stored = DictProperty({})
     adc_task = None
 
     def __init__(self, **kwargs):
@@ -81,9 +84,10 @@ class StressTestApp(MDApp):
         for request in range(self.adc_requests):
             # Do something (print a number for now).
             requests_sent += 1
-            print(requests_sent)
             data_held.append(requests_sent)
-        print(f'\nData held: {len(data_held)}\n')
+        self.adc_stored = list(data_held)
+        print(f'Requests sent: {requests_sent}')
+        print(f'Data held: {len(data_held)}')
 
     def stop_adc_test(self):
         ''' Stop and unschedule the ADC test. '''
