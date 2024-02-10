@@ -54,6 +54,7 @@ class StressTestApp(MDApp):
     def setup_screens(self):
         ''' Create the screens and add them to the screen manager. '''
         screens = self.screen_config()
+        Builder.load_file('views/constants.kv')
         for name, info in screens.items():
             self.load_kv_file(info)
             self.sm.add_widget(info['class'](name=name))

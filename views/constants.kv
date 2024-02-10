@@ -1,0 +1,29 @@
+<NavBtn@MDButton>:
+    text: ''
+    style: 'elevated'
+    theme_width: 'Custom'
+    size_hint_y: None
+    radius: 0
+    MDButtonText:
+        text: root.text
+        font_style: 'Headline'
+        role: 'small'
+        pos_hint: {'center_x': .5, 'center_y': .5}
+
+<ValueField@MDTextField>:
+    text: ''
+    icon: ''
+    field: ''
+    hint: ''
+    mode: 'outlined'
+    theme_text_color: 'Custom'
+    text_color_normal: '#F7F7F7'
+    halign: 'center'
+    size_hint_x: .3
+    MDTextFieldHintText:
+        text: root.field
+    MDTextFieldHelperText:
+        text: root.hint
+        mode: 'persistent'
+    MDTextFieldTrailingIcon:
+        icon: root.icon
