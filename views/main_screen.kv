@@ -4,23 +4,17 @@
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: dp(12)
+        padding: dp(10)
 
-        MDTopAppBar:
-            type: 'small'
-            md_bg_color: self.theme_cls.secondaryContainerColor
-            pos_hint: {'center_x': .5, 'center_y': .5}
-            MDTopAppBarLeadingButtonContainer:
-                MDActionTopAppBarButton:
-                    icon: 'arrow-left'
-            MDTopAppBarTitle:
-                text: app.current_theme
-                font_style: 'Title'
-                role: 'large'
-                pos_hint: {'center_x': .5}
-            MDTopAppBarTrailingButtonContainer:
-                MDActionTopAppBarButton:
-                    icon: 'help-circle'
+        MDCard:
+            style: 'elevated'
+            pos_hint: {'top': 1}
+            adaptive_height: True
+            MDRelativeLayout:
+                MDLabel:
+                    text: app.current_theme
+                    halign: 'center'
+
 
         MDBoxLayout:
             orientation: 'vertical'

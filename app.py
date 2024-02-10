@@ -6,14 +6,15 @@ from kivy.uix.screenmanager import (
     ScreenManager,
     NoTransition
 )
+
+import time
+
+
 from kivy.clock import Clock
 from kivy.utils import hex_colormap
 
-import time
-# import busio
-# import board
-# from adafruit_ads1x15.ads1115 import ADS1115 as ADS
-# from adafruit_ads1x15.analog_in import AnalogIn
+
+
 # from adafruit_mcp230xx.mcp23017 import MCP23017
 # from digitalio import Direction
 
@@ -40,17 +41,16 @@ class StressTestApp(MDApp):
         self.color_keys = list(hex_colormap.keys())
         self.current_theme = self.color_keys[self.color_index].capitalize()
 
-
     def build(self):
         ''' Create the application. '''
         self.theme_cls.theme_style = 'Dark'
         self.theme_cls.primary_palette = self.color_keys[self.color_index].capitalize()
         self.setup_screens()
-        Clock.schedule_interval(self.change_theme_color, 2)
+        Clock.schedule_interval(self.change_theme_color, .5)
         return self.sm
-
+    
     def change_theme_color(self, dt):
-        ''' Changes the theme color every 10 seconds. '''
+        ''' Cycles through themes. '''
         self.color_index = (self.color_index + 1) % len(self.color_keys)
         self.theme_cls.primary_palette = self.color_keys[self.color_index].capitalize()
         self.current_theme = self.color_keys[self.color_index].capitalize()
