@@ -6,18 +6,25 @@ from kivy.properties import (
     StringProperty, NumericProperty,
     DictProperty, ListProperty, ObjectProperty
 )
+from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 from kivy.uix.screenmanager import ScreenManager, NoTransition
 from kivy.clock import Clock
-from kivy.utils import hex_colormap
+from kivymd.uix.button import MDButton, MDButtonText
 from kivymd.uix.dialog import (
     MDDialog,
     MDDialogIcon,
     MDDialogHeadlineText,
     MDDialogSupportingText,
     MDDialogButtonContainer,
-    MDDialogContentContainer
+    MDDialogContentContainer,
+)
+from kivymd.uix.divider import MDDivider
+from kivymd.uix.list import (
+    MDListItem,
+    MDListItemLeadingIcon,
+    MDListItemSupportingText,
 )
 # from adafruit_mcp230xx.mcp23017 import MCP23017
 # from digitalio import Direction
@@ -37,8 +44,9 @@ class StressTestApp(MDApp):
     ''' Main application class. '''
 
     adc_requests = NumericProperty(0)
-    adc_stored = DictProperty({})
+    adc_stored = ListProperty([])
     adc_task = None
+    adc_requests_received = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -76,6 +84,8 @@ class StressTestApp(MDApp):
         self.stop_adc_test()  # Stop any existing ADC test.
         self.adc_requests = int(requests)
         data_held = deque(maxlen=int(stored))
+        self.adc_requests_received = 0
+        self.show_adc_dialog()
         self.adc_task = Clock.schedule_interval(lambda dt: self.handle_adc_data(data_held), int(frequency))
 
     def handle_adc_data(self, data_held):
@@ -85,6 +95,7 @@ class StressTestApp(MDApp):
             # Do something (print a number for now).
             requests_sent += 1
             data_held.append(requests_sent)
+            self.adc_requests_received += 1
         self.adc_stored = list(data_held)
         print(f'Requests sent: {requests_sent}')
         print(f'Data held: {len(data_held)}')
@@ -100,10 +111,33 @@ class StressTestApp(MDApp):
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
         MDDialog(
-            MDDialogHeadLineText(
-                text='Live ADC Test Statistics'
-            ),  
-        )
+            MDDialogHeadlineText(text="Live ADC Test Statistics"),
+            MDDialogContentContainer(
+                MDDivider(),
+                MDListItem(
+                    MDListItemSupportingText(text=f'Payload Size: {self.adc_requests}')
+                ),
+                MDListItem(
+                    MDListItemSupportingText(text=f'Requests Sent: {self.adc_requests_received}')
+                ),
+                MDDivider(),
+                orientation = 'vertical'
+            ),
+            MDDialogButtonContainer(
+                MDButton(
+                    MDButtonText(
+                        text='Stop',
+                        font_style='Title',
+                        role='large',
+                        pos_hint={'center_x': .5, 'center_y': .5}
+                        ),
+                    style='elevated',
+                    theme_width='Custom',
+                    size_hint_y=None,
+                    height='48dp'
+                )
+            ),
+        ).open()
 
 if __name__ == '__main__':
     StressTestApp().run()

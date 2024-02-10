@@ -13,10 +13,10 @@ class ADCDialog(BoxLayout):
         
         self.add_widget(Label(text='Live ADC Test Statistics'))
         
-        self.payload_size = Label(text='Payload Size: ')
+        self.payload_size = Label(text='Payload Size: 0')
         self.add_widget(self.payload_size)
         
-        self.requests_sent = Label(text='Requests Sent: ')
+        self.requests_sent = Label(text='Requests Sent: 0')
         self.add_widget(self.requests_sent)
         
         self.bus_status = Spinner(text='Bus Status: OK', values=('OK', 'Failed'))
