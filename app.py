@@ -35,6 +35,7 @@ class StressTestApp(MDApp):
 
     adc_requests = NumericProperty(0)
     adc_stored = ListProperty([])
+    adc_task = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -69,19 +70,29 @@ class StressTestApp(MDApp):
 
     def start_adc_test(self, requests, frequency, stored):
         ''' Test to simulate ADC readings. '''
-        Clock.unschedule(self.handle_adc_data(requests, stored))
-        for _ in range(requests-1):
-            Clock.schedule_once(lambda x: self.handle_adc_data(requests, stored), frequency)
+        self.stop_adc_test()  # Stop any existing ADC test.
+        self.adc_requests = int(requests)
+        self.adc_stored = deque(maxlen=int(stored))
+        self.adc_task = Clock.schedule_interval(lambda dt: self.handle_adc_data(), int(frequency))
 
-    def handle_adc_data(self, requests, stored):
+    def handle_adc_data(self):
         ''' Handle the ADC data. '''
-        received = 0
-        stored_data = deque(maxlen=stored)
-        for _ in range(requests-1):
-            received += 1
-            stored_data.append(received)
-        print(f'Stored {len(stored_data)} data points.')
+        requests_sent = 0
+        for request in range(self.adc_requests):
+            # Do something (print a number for now).
+            requests_sent += 1
+            print(f'ADC request {requests_sent} sent.')
+            self.adc_stored.append(self.adc_requests)
+        else:
+            self.stop_adc_test()
 
+    def stop_adc_test(self):
+        ''' Stop and unschedule the ADC test. '''
+        if self.adc_task:
+            self.adc_task.cancel()
+            self.adc_task = None
+            self.adc_requests = 0
+            self.adc_stored.clear()
 
 if __name__ == '__main__':
     StressTestApp().run()
