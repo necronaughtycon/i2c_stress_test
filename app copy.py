@@ -5,7 +5,7 @@ This is a simple Kivy application to test the performance of the ADC and MCP2301
 
 
 # Config settings must be applied before other imports.
-# import settings.kivy_config  # Uncomment for Comfile.
+import settings.kivy_config
 
 # Standard imports.
 import time
@@ -23,7 +23,6 @@ from kivymd.uix.screen import MDScreen
 
 # Local imports.
 from components import ADCDialog, ADCResults
-from utility import ADC
 
 # from adafruit_mcp230xx.mcp23017 import MCP23017
 # from digitalio import Direction
@@ -83,7 +82,6 @@ class StressTestApp(MDApp):
 
     def start_adc_test(self, requests, frequency, stored):
         ''' Test to simulate ADC readings. '''
-        self.adc = ADC(amount=requests, held=stored)
         self.adc_requests = int(requests)
         self.adc_requests_received = 0
         self.show_adc_dialog()
@@ -101,15 +99,10 @@ class StressTestApp(MDApp):
     def handle_adc_data(self, data_held):
         ''' Handle the ADC data. '''
         # Do something (print a number for now).
-        adc_data = self.adc.request_data()
-        if adc_data != 'ERR':
-            self.adc_requests_received += 1
-            self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc.requests_stored))
-            self.adc_stored = list(self.adc.requests_stored)
-            self.adc_bus_status = 'OK'
-        else:
-            self.adc_bus_status = 'FAILED'
-            self.stop_adc_test()
+        data_held.append(self.adc_requests_received + 1)
+        self.adc_requests_received += 1
+        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
+        self.adc_stored = list(data_held)
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
@@ -132,8 +125,6 @@ class StressTestApp(MDApp):
             self.adc_task.cancel()
             self.adc_task = None
             self.adc_stored.clear()
-            if hasattr(self, 'adc_dialog'):
-                self.adc_dialog.close()
             self.show_adc_results()
 
 

@@ -25,9 +25,10 @@ class ADC:
     This class is used to interface with the ADS1115 Analog-to-Digital Converter.
     '''
     _warnings = {'board': False, 'busio': False, 'ads': False}
+    _hardware_available = False
 
     def __init__(self, amount=60, held=1, adc_zero=15422.0, gain=1):
-        self._initialize_hardware()
+        self._hardware_available = self._initialize_hardware()
         if self._hardware_available:
             i2c = busio.I2C(board.SCL, board.SDA)
             self._adc = ADS.ADS1115(i2c)
@@ -59,7 +60,7 @@ class ADC:
             print(f'ADS1x15 library not available: {e}')
             cls._warnings['ads'] = True
         if any(cls._warnings):
-            _cls_hardware_available = False
+            cls._hardware_available = False
 
     @staticmethod
     def _calculate_average(readings):
