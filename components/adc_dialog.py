@@ -10,11 +10,6 @@ from kivymd.uix.dialog import (
 )
 from kivymd.uix.divider import MDDivider
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDButton
-from kivymd.uix.label import MDLabel
-from kivy.uix.widget import Widget
-from kivy.lang import Builder
 from kivymd.uix.list import (
     MDListItem,
     MDListItemLeadingIcon,
@@ -37,7 +32,7 @@ class ADCDialog:
         )
  
         # Container setup.
-        self.container = MDDialogContentContainer(orientation='vertical')
+        self.container = self._create_container()
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDListItem(self.payload))
         self.container.add_widget(MDListItem(self.requests_received))
@@ -68,6 +63,10 @@ class ADCDialog:
             self.button_container
         )
 
+    def _create_container(self):
+        container = MDDialogContentContainer(orientation='vertical')
+        return container
+
     def update_information(self, payload, received):
         self.payload.text = f'Payload Size: {payload}'
         self.requests_received.text = f'Requests Received: {received}'
@@ -95,7 +94,7 @@ class ADCResults:
         )
  
         # Container setup.
-        self.container = MDDialogContentContainer(orientation='vertical')
+        self.container = self._create_container()
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDListItem(self.payload))
         self.container.add_widget(MDListItem(self.requests_received))
@@ -126,6 +125,10 @@ class ADCResults:
             self.button_container
         )
     
+    def _create_container(self):
+        container = MDDialogContentContainer(orientation='vertical')
+        return container
+
     def update_results(self, payload, received, status):
         self.payload.text = f'Payload Size: {payload}'
         self.requests_received.text = f'Requests Received: {received}'
