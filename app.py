@@ -90,12 +90,19 @@ class StressTestApp(MDApp):
     def schedule_adc_intervals(self, frequency, list_size):
         ''' Schedule the intervals for the ADC test. '''
         time_interval = int(frequency) / int(self.adc_requests)
-        print(time_interval)
         data_held = deque(maxlen=int(list_size))
         self.adc_task = Clock.schedule_interval(
             lambda dt: self.handle_adc_data(data_held), 
             time_interval
         )
+
+    def handle_adc_data(self, data_held):
+        ''' Handle the ADC data. '''
+        # Do something (print a number for now).
+        data_held.append(self.adc_requests_received + 1)
+        self.adc_requests_received += 1
+        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
+        self.adc_stored = list(data_held)
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
@@ -112,21 +119,12 @@ class StressTestApp(MDApp):
         self.adc_results.update_status(self.adc_requests, self.adc_requests_received, self.adc_bus_status)
         self.adc_results.open()
 
-    def handle_adc_data(self, data_held):
-        ''' Handle the ADC data. '''
-        # Do something (print a number for now).
-        data_held.append(self.adc_requests_received + 1)
-        self.adc_requests_received += 1
-        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
-        self.adc_stored = list(data_held)
-
     def stop_adc_test(self, instance=None):
         ''' Stop and unschedule the ADC test. '''
         if self.adc_task:
             self.adc_task.cancel()
             self.adc_task = None
-            # self.adc_requests = 0
-            # self.adc_stored.clear()
+            self.adc_stored.clear()
             self.show_adc_results()
 
 
