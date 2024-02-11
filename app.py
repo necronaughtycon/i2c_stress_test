@@ -104,7 +104,7 @@ class StressTestApp(MDApp):
         ''' Display the results of the ADC test. '''
         if not hasattr(self, 'adc_results'):
             self.adc_results = ADCResults(self)
-        self.adc_results.update_information(self.adc_requests, self.adc_requests_received, self.adc_bus_status)
+        self.adc_results.update_status(self.adc_requests, self.adc_requests_received, self.adc_bus_status)
         self.adc_results.open()
 
     def handle_adc_data(self, data_held):
@@ -115,7 +115,7 @@ class StressTestApp(MDApp):
             requests_sent += 1
             data_held.append(requests_sent)
             self.adc_requests_received += 1
-        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received)
+        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
         self.adc_stored = list(data_held)
 
     def stop_adc_test(self, instance=None):
