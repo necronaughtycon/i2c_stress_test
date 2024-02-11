@@ -51,7 +51,7 @@ class ADCDialog:
         self.button = MDButton(
             style='elevated', theme_width='Custom', size_hint_y=None,
             height='48dp', radius=7, size_hint_x=.5,
-            on_press=self.app.stop_adc_test
+            # on_press=self.app.stop_adc_test
         )
         self.button_text = MDButtonText(
             text='Stop', font_style='Title', role='large',
@@ -79,4 +79,5 @@ class ADCDialog:
         self.dialog.open()
     
     def close(self):
+        print('Closing dialog')
         self.dialog.dismiss()

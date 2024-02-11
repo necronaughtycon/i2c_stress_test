@@ -89,6 +89,7 @@ class StressTestApp(MDApp):
         if not hasattr(self, 'adc_dialog'):
             self.adc_dialog = ADCDialog(self)
             self.adc_dialog.button.bind(on_release=self.stop_adc_test)
+            self.adc_dialog.dialog.bind(on_dismiss=self.stop_adc_test)
     
         self.adc_dialog.update_payload_size(self.adc_requests)
         self.adc_dialog.update_requests_sent(self.adc_requests_received)
@@ -108,6 +109,7 @@ class StressTestApp(MDApp):
 
     def stop_adc_test(self, instance=None):
         ''' Stop and unschedule the ADC test. '''
+        print('Stopping ADC test')
         if self.adc_task:
             self.adc_task.cancel()
             self.adc_task = None
