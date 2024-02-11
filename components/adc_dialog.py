@@ -28,23 +28,24 @@ class ADCDialog:
     def __init__(self, app, **kwargs):
         self.app = app
         
+        # Content setup.
+        self.payload = MDListItemSupportingText(text='Payload Size: 0', halign='center')
+        self.requests_received = MDListItemSupportingText(text='Requests Received: 0', halign='center')
+        self.progress = MDCircularProgressIndicator(
+            size_hint=(None, None), size=('40dp', '40dp'),
+            pos_hint={'center_x': .5, 'center_y': .1}
+        )
+ 
         # Container setup.
         self.container = MDDialogContentContainer(orientation='vertical')
         self.container.add_widget(MDDivider())
-        self.payload = MDListItemSupportingText(text='Payload Size: 0', halign='center')
-        self.requests_received = MDListItemSupportingText(text='Requests Received: 0', halign='center')
         self.container.add_widget(MDListItem(self.payload))
         self.container.add_widget(MDListItem(self.requests_received))
         self.container.add_widget(MDDivider())
-        self.container.add_widget(Widget(size_hint_y=.5))
-
-        # Progress indicator setup.
-        self.progress = MDCircularProgressIndicator(
-            size_hint=(None, None), 
-            size=('48dp', '48dp'),
-            pos_hint={'center_x': .5, 'center_y': .5}
-            )
+        self.container.add_widget(MDBoxLayout(size_hint_y=None, height='20dp'))
         self.container.add_widget(self.progress)
+
+
         # Button setup.
         self.button_container = MDDialogButtonContainer()
         self.button = MDButton(
