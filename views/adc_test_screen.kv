@@ -3,14 +3,14 @@
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: dp(24)
+        padding: dp(12)
 
         MDBoxLayout:
             size_hint_y: None
             height: dp(48)
             radius: 7
             pos_hint: {'top': 1}
-            spacing: dp(48)
+            spacing: dp(42)
             Widget:
                 size_hint_x: .1
             NavBtn:
@@ -28,11 +28,11 @@
 
         MDBoxLayout:
             orientation: 'vertical'
-            padding: dp(0), dp(48), dp(0), dp(48)
+            padding: dp(0), dp(0), dp(0), dp(0)
             MDRelativeLayout:
                 MDGridLayout:
                     cols: 2
-                    spacing: dp(42)
+                    spacing: dp(10)
                     padding: (dp(125), dp(0), dp(125), dp(0))
                     adaptive_height: True
                     pos_hint: {'center_x': .5, 'center_y': .5}
@@ -74,7 +74,7 @@
             size_hint_y: None
             height: dp(48)
             pos_hint: {'bottom': 1}
-            padding: dp(250), dp(0)
+            padding: dp(250), dp(0), dp(250), dp(0)
             MDButton:
                 style: 'elevated'
                 theme_width: 'Custom'

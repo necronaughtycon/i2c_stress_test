@@ -4,34 +4,39 @@ This is a simple Kivy application to test the performance of the ADC and MCP2301
 '''
 
 
+# Config settings must be applied before other imports.
+import settings.kivy_config
+
 # Standard imports.
 import time
 from collections import deque
 
 # Third-party imports.
+from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import (
-    StringProperty, NumericProperty,
-    DictProperty, ListProperty, ObjectProperty
+    DictProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 )
+from kivy.uix.screenmanager import NoTransition, ScreenManager
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
-from kivy.uix.screenmanager import ScreenManager, NoTransition
-from kivy.clock import Clock
+
+# Local imports.
+from components import ADCDialog, ADCResults
 
 # from adafruit_mcp230xx.mcp23017 import MCP23017
 # from digitalio import Direction
 # Initialize I2C bus
 # i2c = busio.I2C(board.SCL, board.SDA)
 
-# Local imports.
-from components import ADCDialog, ADCResults
 
 class ADCTestScreen(MDScreen):
+    ''' ADC test screen. '''
     pass
 
 
 class MCPTestScreen(MDScreen):
+    ''' MCP test screen. '''
     pass
 
 
@@ -52,9 +57,8 @@ class StressTestApp(MDApp):
     def build(self):
         ''' Create the application. '''
         self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'Ghostwhite'
+        self.theme_cls.primary_palette = 'Darkblue'
         self.setup_screens()
-        # Clock.schedule_interval(self.change_theme_color, .5)
         return self.sm
 
     def screen_config(self):
@@ -78,20 +82,21 @@ class StressTestApp(MDApp):
 
     def start_adc_test(self, requests, frequency, stored):
         ''' Test to simulate ADC readings. '''
-        self.stop_adc_test()
         self.adc_requests = int(requests)
         self.adc_requests_received = 0
         self.show_adc_dialog()
         self.schedule_adc_intervals(frequency, stored)
         
     def schedule_adc_intervals(self, frequency, list_size):
+        ''' Schedule the intervals for the ADC test. '''
+        time_interval = int(frequency) / int(self.adc_requests)
+        print(time_interval)
         data_held = deque(maxlen=int(list_size))
         self.adc_task = Clock.schedule_interval(
             lambda dt: self.handle_adc_data(data_held), 
-            int(frequency)
+            time_interval
         )
 
-    
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
         if not hasattr(self, 'adc_dialog'):
@@ -109,12 +114,9 @@ class StressTestApp(MDApp):
 
     def handle_adc_data(self, data_held):
         ''' Handle the ADC data. '''
-        requests_sent = 0
-        for request in range(self.adc_requests):
-            # Do something (print a number for now).
-            requests_sent += 1
-            data_held.append(requests_sent)
-            self.adc_requests_received += 1
+        # Do something (print a number for now).
+        data_held.append(self.adc_requests_received + 1)
+        self.adc_requests_received += 1
         self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
         self.adc_stored = list(data_held)
 
@@ -125,7 +127,7 @@ class StressTestApp(MDApp):
             self.adc_task = None
             # self.adc_requests = 0
             # self.adc_stored.clear()
-        self.show_adc_results()
+            self.show_adc_results()
 
 
 if __name__ == '__main__':
