@@ -18,11 +18,13 @@
                 text: 'ADC'
                 height: dp(48)
                 size_hint_x: .4
+                disabled: True
             NavBtn:
                 id: mcp_btn
                 text: 'MCP'
                 height: dp(48)
                 size_hint_x: .4
+                on_press: app.switch_screen('mcp_test_screen')
             Widget:
                 size_hint_x: .1
 

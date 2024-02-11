@@ -1,1 +1,29 @@
+<MCPTestScreen>:
+    md_bg_color: self.theme_cls.backgroundColor
 
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: dp(12)
+
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            radius: 7
+            pos_hint: {'top': 1}
+            spacing: dp(42)
+            Widget:
+                size_hint_x: .1
+            NavBtn:
+                id: adc_btn
+                text: 'ADC'
+                height: dp(48)
+                size_hint_x: .4
+                on_press: app.switch_screen('adc_test_screen')
+            NavBtn:
+                id: mcp_btn
+                text: 'MCP'
+                height: dp(48)
+                size_hint_x: .4
+                disabled: True
+            Widget:
+                size_hint_x: .1
