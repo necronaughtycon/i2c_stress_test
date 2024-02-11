@@ -25,7 +25,7 @@ from kivy.clock import Clock
 # i2c = busio.I2C(board.SCL, board.SDA)
 
 # Local imports.
-from components import ADCDialog
+from components import ADCDialog, ADCResults
 
 class ADCTestScreen(MDScreen):
     pass
@@ -38,10 +38,12 @@ class MCPTestScreen(MDScreen):
 class StressTestApp(MDApp):
     ''' Main application class. '''
 
-    adc_requests = NumericProperty(0)
     adc_stored = ListProperty([])
+    adc_requests = NumericProperty()
+    adc_requests_received = NumericProperty()
+    adc_bus_status = StringProperty('OK')
     adc_task = None
-    adc_requests_received = NumericProperty(0)
+    adc_update_task = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -76,24 +78,34 @@ class StressTestApp(MDApp):
 
     def start_adc_test(self, requests, frequency, stored):
         ''' Test to simulate ADC readings. '''
-        self.stop_adc_test()  # Stop any existing ADC test.
+        self.stop_adc_test()
         self.adc_requests = int(requests)
-        data_held = deque(maxlen=int(stored))
         self.adc_requests_received = 0
-        # self.show_adc_dialog()
-        self.show_adc_dialog_new()
-        self.adc_task = Clock.schedule_interval(lambda dt: self.handle_adc_data(data_held), int(frequency))
+        self.show_adc_dialog()
+        self.schedule_adc_intervals(frequency, stored)
+        
+    def schedule_adc_intervals(self, frequency, list_size):
+        data_held = deque(maxlen=int(list_size))
+        self.adc_task = Clock.schedule_interval(
+            lambda dt: self.handle_adc_data(data_held), 
+            int(frequency)
+        )
+
     
-    def show_adc_dialog_new(self):
+    def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
         if not hasattr(self, 'adc_dialog'):
             self.adc_dialog = ADCDialog(self)
-            self.adc_dialog.button.bind(on_release=self.stop_adc_test)
+            self.adc_dialog.button.bind(on_press=self.stop_adc_test)
             self.adc_dialog.dialog.bind(on_dismiss=self.stop_adc_test)
-    
-        self.adc_dialog.update_payload_size(self.adc_requests)
-        self.adc_dialog.update_requests_sent(self.adc_requests_received)
         self.adc_dialog.open()
+
+    def show_adc_results(self):
+        ''' Display the results of the ADC test. '''
+        if not hasattr(self, 'adc_results'):
+            self.adc_results = ADCResults(self)
+        self.adc_results.update_results(self.adc_requests, self.adc_requests_received, self.adc_bus_status)
+        self.adc_results.open()
 
     def handle_adc_data(self, data_held):
         ''' Handle the ADC data. '''
@@ -103,18 +115,17 @@ class StressTestApp(MDApp):
             requests_sent += 1
             data_held.append(requests_sent)
             self.adc_requests_received += 1
+        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received)
         self.adc_stored = list(data_held)
-        print(f'Requests sent: {requests_sent}')
-        print(f'Data held: {len(data_held)}')
 
     def stop_adc_test(self, instance=None):
         ''' Stop and unschedule the ADC test. '''
-        print('Stopping ADC test')
         if self.adc_task:
             self.adc_task.cancel()
             self.adc_task = None
-            self.adc_requests = 0
-            self.adc_stored.clear()
+            # self.adc_requests = 0
+            # self.adc_stored.clear()
+        self.show_adc_results()
 
 
 if __name__ == '__main__':
