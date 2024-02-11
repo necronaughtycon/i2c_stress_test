@@ -20,8 +20,7 @@ from kivymd.uix.list import (
     MDListItemLeadingIcon,
     MDListItemSupportingText,
 )
-
-
+from kivymd.uix.progressindicator.progressindicator import MDCircularProgressIndicator
 
 
 class ADCDialog:
@@ -37,7 +36,15 @@ class ADCDialog:
         self.container.add_widget(MDListItem(self.payload))
         self.container.add_widget(MDListItem(self.requests_received))
         self.container.add_widget(MDDivider())
+        self.container.add_widget(Widget(size_hint_y=.5))
 
+        # Progress indicator setup.
+        self.progress = MDCircularProgressIndicator(
+            size_hint=(None, None), 
+            size=('48dp', '48dp'),
+            pos_hint={'center_x': .5, 'center_y': .5}
+            )
+        self.container.add_widget(self.progress)
         # Button setup.
         self.button_container = MDDialogButtonContainer()
         self.button = MDButton(
@@ -56,9 +63,7 @@ class ADCDialog:
         
         # Dialog setup.
         self.dialog = MDDialog(
-            MDDialogHeadlineText(
-                text='Live ADC Test Statistics'
-            ),
+            MDDialogHeadlineText(text='Live ADC Test Statistics'),
             self.container,
             self.button_container
         )

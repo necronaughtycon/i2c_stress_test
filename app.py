@@ -1,3 +1,9 @@
+#!/venv/bin/python3
+'''
+This is a simple Kivy application to test the performance of the ADC and MCP23017.
+'''
+
+
 # Standard imports.
 import time
 from collections import deque
