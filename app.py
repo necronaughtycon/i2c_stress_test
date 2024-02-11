@@ -5,7 +5,7 @@ This is a simple Kivy application to test the performance of the ADC and MCP2301
 
 
 # Config settings must be applied before other imports.
-# import settings.kivy_config  # Uncomment for Comfile.
+import settings.kivy_config  # Uncomment for Comfile.
 
 # Standard imports.
 import time
@@ -83,16 +83,16 @@ class StressTestApp(MDApp):
 
     def start_adc_test(self, requests, frequency, stored):
         ''' Test to simulate ADC readings. '''
-        self.adc = ADC(amount=requests, held=stored)
+        self.adc = ADC(amount=requests)
         self.adc_requests = int(requests)
         self.adc_requests_received = 0
         self.show_adc_dialog()
         self.schedule_adc_intervals(frequency, stored)
         
-    def schedule_adc_intervals(self, frequency, list_size):
+    def schedule_adc_intervals(self, frequency, stored):
         ''' Schedule the intervals for the ADC test. '''
         time_interval = int(frequency) / int(self.adc_requests)
-        data_held = deque(maxlen=int(list_size))
+        data_held = deque(maxlen=int(stored))
         self.adc_task = Clock.schedule_interval(
             lambda dt: self.handle_adc_data(data_held), 
             time_interval
@@ -104,8 +104,9 @@ class StressTestApp(MDApp):
         adc_data = self.adc.request_data()
         if adc_data != 'ERR':
             self.adc_requests_received += 1
-            self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc.requests_stored))
-            self.adc_stored = list(self.adc.requests_stored)
+            data_held.append(adc_data)
+            self.adc_stored = list(data_held)
+            self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
             self.adc_bus_status = 'OK'
         else:
             self.adc_bus_status = 'FAILED'
