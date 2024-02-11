@@ -10,6 +10,11 @@ from kivymd.uix.dialog import (
 )
 from kivymd.uix.divider import MDDivider
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.button import MDButton
+from kivymd.uix.label import MDLabel
+from kivy.uix.widget import Widget
+from kivy.lang import Builder
 from kivymd.uix.list import (
     MDListItem,
     MDListItemLeadingIcon,
@@ -18,127 +23,87 @@ from kivymd.uix.list import (
 from kivymd.uix.progressindicator.progressindicator import MDCircularProgressIndicator
 
 
-class ADCDialog:
-    ''' This class handles the ADC test dialog. '''
-    def __init__(self, app, **kwargs):
+class BaseDialog:
+    '''Base class for dialogs with common functionalities.'''
+    def __init__(self, app, header_text, btn_text, progress_indicator=None, **kwargs):
         self.app = app
-        
+
         # Content setup.
         self.payload = MDListItemSupportingText(text='Payload Size:', halign='center')
         self.requests_received = MDListItemSupportingText(text='Requests Received:', halign='center')
-        self.progress = MDCircularProgressIndicator(
-            size_hint=(None, None), size=('40dp', '40dp'),
-            pos_hint={'center_x': .5, 'center_y': .1}
-        )
- 
+
         # Container setup.
-        self.container = self._create_container()
+        self.container = MDDialogContentContainer(orientation='vertical')
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDListItem(self.payload))
         self.container.add_widget(MDListItem(self.requests_received))
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDBoxLayout(size_hint_y=None, height='20dp'))
+        if progress_indicator:
+            self.container.add_widget(progress_indicator)
+
+        # Button setup.
+        self.button_container = MDDialogButtonContainer()
+        self.create_button(btn_text)
+        self.button_container.add_widget(Widget(size_hint_x=.25))
+        self.button_container.add_widget(self.button)
+        self.button_container.add_widget(Widget(size_hint_x=.25))
+
+        # Dialog setup.
+        self.dialog = MDDialog(
+            MDDialogHeadlineText(text=header_text),
+            self.container,
+            self.button_container
+        )
+
+    def create_button(self, btn_txt):
+        self.button = MDButton(
+            MDButtonText(
+                text=btn_txt,
+                font_style='Title',
+                role='large',
+                pos_hint={'center_x': .5, 'center_y': .5}    
+            ),
+            style='elevated',
+            theme_width='Custom',
+            size_hint_y=None,
+            height='48dp',
+            radius=7,
+            on_press=lambda x: self.close()
+        )
+
+    def update_information(self, payload, received, bus_status=None):
+        self.payload.text = f'Payload Size: {payload}'
+        self.requests_received.text = f'Requests Received: {received}'
+        if bus_status:
+            self.bus_status.text = f'Bus Status: {bus_status}'
+
+    def open(self):
+        self.dialog.open()
+
+    def close(self):
+        self.dialog.dismiss()
+
+
+class ADCDialog(BaseDialog):
+    ''' This class handles the ADC test dialog. '''
+    def __init__(self, app, **kwargs):
+        super().__init__(app, 'Live ADC Test Statistics', 'Stop', **kwargs)
+        self.setup_content()
+
+    def setup_content(self):
+        self.progress = MDCircularProgressIndicator(
+            size_hint=(None, None), size=('40dp', '40dp'),
+            pos_hint={'center_x': .5, 'center_y': .1}
+        )
         self.container.add_widget(self.progress)
 
 
-        # Button setup.
-        self.button_container = MDDialogButtonContainer()
-        self.button = MDButton(
-            style='elevated', theme_width='Custom', size_hint_y=None,
-            height='48dp', radius=7, size_hint_x=.5, on_press=lambda x: self.close()
-        )
-        self.button_text = MDButtonText(
-            text='Stop', font_style='Title', role='large',
-            pos_hint={'center_x': .5, 'center_y': .5}
-        )
-        self.button.add_widget(self.button_text)
-        self.button_container.add_widget(Widget(size_hint_x=.25))
-        self.button_container.add_widget(self.button)
-        self.button_container.add_widget(Widget(size_hint_x=.25))
-        
-        # Dialog setup.
-        self.dialog = MDDialog(
-            MDDialogHeadlineText(text='Live ADC Test Statistics'),
-            self.container,
-            self.button_container
-        )
-
-    def _create_container(self):
-        container = MDDialogContentContainer(orientation='vertical')
-        return container
-
-    def update_information(self, payload, received):
-        self.payload.text = f'Payload Size: {payload}'
-        self.requests_received.text = f'Requests Received: {received}'
-    
-    def open(self):
-        self.dialog.open()
-    
-    def close(self):
-        print('Closing dialog')
-        self.dialog.dismiss()
-
-
-class ADCResults:
+class ADCResults(BaseDialog):
     ''' This class handles the ADC test results dialog. '''
     def __init__(self, app, **kwargs):
-        self.app = app
-        
-        # Content setup.
-        self.payload = MDListItemSupportingText(text='Payload Size:', halign='center')
-        self.requests_received = MDListItemSupportingText(text='Requests Received:', halign='center')
+        super().__init__(app, 'ADC Test Results', 'Exit', **kwargs)
+        self.setup_content()
+
+    def setup_content(self):
         self.bus_status = MDListItemSupportingText(text='Bus Status:', halign='center')
-        self.progress = MDCircularProgressIndicator(
-            size_hint=(None, None), size=('40dp', '40dp'),
-            pos_hint={'center_x': .5, 'center_y': .1}
-        )
- 
-        # Container setup.
-        self.container = self._create_container()
-        self.container.add_widget(MDDivider())
-        self.container.add_widget(MDListItem(self.payload))
-        self.container.add_widget(MDListItem(self.requests_received))
-        self.container.add_widget(MDDivider())
-        self.container.add_widget(MDBoxLayout(size_hint_y=None, height='20dp'))
-
-        # Button setup.
-        self.button_container = MDDialogButtonContainer()
-        self.button = MDButton(
-            style='elevated', theme_width='Custom', size_hint_y=None,
-            height='48dp', radius=7, size_hint_x=.5, on_press=lambda x: self.close()
-        )
-        self.button_text = MDButtonText(
-            text='Exit', font_style='Title', role='large',
-            pos_hint={'center_x': .5, 'center_y': .5}
-        )
-        self.button.add_widget(self.button_text)
-        self.button_container.add_widget(Widget(size_hint_x=.25))
-        self.button_container.add_widget(self.button)
-        self.button_container.add_widget(Widget(size_hint_x=.25))
-        self.result = MDDialogIcon()
-        
-        # Dialog setup.
-        self.dialog = MDDialog(
-            self.result,
-            MDDialogHeadlineText(text='ADC Test Results'),
-            self.container,
-            self.button_container
-        )
-    
-    def _create_container(self):
-        container = MDDialogContentContainer(orientation='vertical')
-        return container
-
-    def update_results(self, payload, received, status):
-        self.payload.text = f'Payload Size: {payload}'
-        self.requests_received.text = f'Requests Received: {received}'
-        self.bus_status.text = f'Bus Status: {status}'
-        if 'ok' in status.lower():
-            self.result.icon = 'check-circle-outline'
-    
-    def open(self):
-        self.dialog.open()
-    
-    def close(self):
-        print('Closing dialog')
-        self.dialog.dismiss()
