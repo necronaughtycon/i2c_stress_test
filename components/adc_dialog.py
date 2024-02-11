@@ -139,6 +139,9 @@ class ADCResults:
         if 'ok' in status.lower():
             self.result.icon = 'check-circle-outline'
             self.result.icon_color = 'green'
+        else:
+            self.result.icon = 'alert-circle-outline'
+            self.result.icon_color = 'red'
     
     def open(self):
         self.dialog.open()
