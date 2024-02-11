@@ -25,11 +25,6 @@ from kivymd.uix.screen import MDScreen
 from components import ADCDialog, ADCResults
 from utility import ADC
 
-# from adafruit_mcp230xx.mcp23017 import MCP23017
-# from digitalio import Direction
-# Initialize I2C bus
-# i2c = busio.I2C(board.SCL, board.SDA)
-
 
 class ADCTestScreen(MDScreen):
     ''' ADC test screen. '''
