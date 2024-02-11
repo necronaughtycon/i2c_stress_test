@@ -21,6 +21,12 @@ from kivymd.uix.dialog import (
     MDDialogContentContainer,
 )
 from kivymd.uix.divider import MDDivider
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.button import MDButton
+from kivymd.uix.label import MDLabel
+from kivy.uix.widget import Widget
+from kivy.lang import Builder
 from kivymd.uix.list import (
     MDListItem,
     MDListItemLeadingIcon,
@@ -37,7 +43,70 @@ class ADCTestScreen(MDScreen):
 
 
 class MCPTestScreen(MDScreen):
-    test_type = StringProperty('')
+    pass
+
+
+class ADCDialog:
+    ''' This class is a dialog that displays live statistics for an ongoing ADC test. '''
+    def __init__(self, **kwargs):
+        super(ADCDialog, self).__init__(**kwargs)
+        
+        # Dialog content layout
+        self.content = MDDialog(MDDialogHeadlineText(text='Live ADC Test Statistics'))
+        self.container = MDDialogContentContainer(orientation='vertical')
+        self.container.add_widget(MDDivider())
+        self.payload = MDListItemSupportingText(
+            text='Payload Size: 0', 
+            halign='center'
+            )
+        self.container.add_widget(MDListItem(self.payload))
+        self.requests_received = MDListItem(
+            MDListItemSupportingText(
+                text='Requests Received: 0',
+                halign='center'
+            )
+        )
+        self.container.add_widget(self.requests_received)
+        self.container.add_widget(MDDivider())
+        self.content.add_widget(self.container)
+        self.button_container = MDDialogButtonContainer()
+        self.button = MDButton(
+            style='elevated',
+            theme_width='Custom',
+            size_hint_y=None,
+            height='48dp',
+            radius=7,
+            size_hint_x=.5
+        )
+        self.button.bind(on_release=self.stop_adc_test)
+        self.button_text = MDButtonText(
+            text='Stop',
+            font_style='Title',
+            role='large',
+            pos_hint={'center_x': .5, 'center_y': .5}
+        )
+        self.button.add_widget(self.button_text)
+        self.button_container.add_widget(Widget(size_hint_x=.25))
+        self.button_container.add_widget(self.button)
+        self.button_container.add_widget(Widget(size_hint_x=.25))
+        self.content.add_widget(self.button_container)
+    
+    def update_payload_size(self, size):
+        self.payload.text = f'Payload Size: {size}'
+    
+    def update_requests_sent(self, requests):
+        self.requests_received.text = f'Requests Sent: {requests}'
+    
+    def open(self):
+        self.content.open()
+    
+    def close(self):
+        self.content.dismiss()
+    
+    def stop_adc_test(self, instance):
+        # Implement stopping logic here, possibly using a callback to the parent app
+        self.close()
+    
 
 
 class StressTestApp(MDApp):
@@ -85,8 +154,22 @@ class StressTestApp(MDApp):
         self.adc_requests = int(requests)
         data_held = deque(maxlen=int(stored))
         self.adc_requests_received = 0
-        self.show_adc_dialog()
+        # self.show_adc_dialog()
+        self.show_adc_dialog_new()
         self.adc_task = Clock.schedule_interval(lambda dt: self.handle_adc_data(data_held), int(frequency))
+    
+    def show_adc_dialog_new(self):
+        if not hasattr(self, 'adc_dialog'):
+            self.adc_dialog = ADCDialog()
+            self.adc_dialog.button.bind(on_release=self.stop_adc_test)
+    
+        self.adc_dialog.update_payload_size(self.adc_requests)
+        self.adc_dialog.update_requests_sent(self.adc_requests_received)
+        self.adc_dialog.open()
+
+
+
+
 
     def handle_adc_data(self, data_held):
         ''' Handle the ADC data. '''
@@ -115,7 +198,10 @@ class StressTestApp(MDApp):
             MDDialogContentContainer(
                 MDDivider(),
                 MDListItem(
-                    MDListItemSupportingText(text=f'Payload Size: {self.adc_requests}')
+                    MDListItemSupportingText(
+                        text=f'Payload Size: {self.adc_requests}',
+                        halign='center'
+                        )
                 ),
                 MDListItem(
                     MDListItemSupportingText(text=f'Requests Sent: {self.adc_requests_received}')
@@ -124,6 +210,7 @@ class StressTestApp(MDApp):
                 orientation = 'vertical'
             ),
             MDDialogButtonContainer(
+                Widget(size_hint_x=.25),
                 MDButton(
                     MDButtonText(
                         text='Stop',
@@ -134,8 +221,11 @@ class StressTestApp(MDApp):
                     style='elevated',
                     theme_width='Custom',
                     size_hint_y=None,
-                    height='48dp'
-                )
+                    height='48dp',
+                    radius=7,
+                    size_hint_x=.5
+                ),
+                Widget(size_hint_x=.25)
             ),
         ).open()
 
