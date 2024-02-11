@@ -115,7 +115,7 @@ class ADCResults:
         self.button_container.add_widget(Widget(size_hint_x=.25))
         self.button_container.add_widget(self.button)
         self.button_container.add_widget(Widget(size_hint_x=.25))
-        self.result = MDDialogIcon()
+        self.result = MDDialogIcon(theme_icon_color='Custom')
         
         # Dialog setup.
         self.dialog = MDDialog(
@@ -135,6 +135,7 @@ class ADCResults:
         self.bus_status.text = f'Bus Status: {status}'
         if 'ok' in status.lower():
             self.result.icon = 'check-circle-outline'
+            self.result.icon_color = 'green'
     
     def open(self):
         self.dialog.open()
