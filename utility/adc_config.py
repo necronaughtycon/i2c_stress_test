@@ -17,13 +17,7 @@ adc = ADC(amount=100, held=10)
 data = adc.request_data()
 '''
 
-try:
-    import board
-    import busio
-    import adafruit_ads1x15.ads1115 as ADS
-    from adafruit_ads1x15.analog_in import AnalogIn
-except ImportError as import_error:
-    print(f'Error: {import_error}\nPlease install the required libraries.\n')
+from smbus2 import SMBus, i2c_msg
 
 
 class ADC:
@@ -31,25 +25,27 @@ class ADC:
     This class is used to interface with the ADS1115 Analog-to-Digital Converter.
     '''
 
-    def __init__(self, amount=60, gain=1):
+    def __init__(self, gain=1):
         self._hardware_initialized = False
         try:
-            i2c = busio.I2C(board.SCL, board.SDA)
-            self._adc = ADS.ADS1115(i2c)
-            self._channel = AnalogIn(self._adc, ADS.P0)
-            self._adc.gain = gain
+            self._bus = SMBus(1)  # 1 indicates /dev/i2c-1.
+            self._address = 0x48  # Default i2c address for the ADS1115.
+            self._gain = gain
             self._hardware_initialized = True
         except ValueError as e:
-            print(f"Failed to initialize hardware: {e}")
-        self.requests = int(amount)
+            print(f'Failed to initialize hardware: {e}')
 
-    def request_data(self) -> str:
-        ''' Send request to ADC. '''
+    def read_adc(self, channel):
+        ''' Read data from ADC. '''
         if not self._hardware_initialized:
             return 'ERR'
         try:
-            for _ in range(self.requests):
-                value = self._channel.value
-                return f'{value:.2f}' if f'{value:.2f}' != '-0.00' else '0.00'
-        except IOError:
+            write = i2c_msg.write(self._address, [0x01, 0x50 | (channel & 0x07), 0x00, 0x83])
+            self._bus.i2c_rdwr(write)
+            read = i2c_msg.read(self._address, 2)
+            self._bus.i2c_rdwr(read)
+            value = (read.buf[0][0] << 8 | read.buf[1][0]) >> 4
+            return f'{value:.2f}' if f'{value:.2f}' != '-0.00' else '0.00'
+        except IOError as io_error:
+            print(f'Failed to read from ADC: {io_error}')
             return 'ERR'
