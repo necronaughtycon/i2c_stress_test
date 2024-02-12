@@ -17,7 +17,13 @@ adc = ADC(amount=100, held=10)
 data = adc.request_data()
 '''
 
-from smbus2 import SMBus, i2c_msg
+try:
+    import board
+    import busio
+    import adafruit_ads1x15.ads1115 as ADS
+    from adafruit_ads1x15.analog_in import AnalogIn
+except ImportError as import_error:
+    print(f'Error: {import_error}\nPlease install the required libraries.\n')
 
 
 class ADC:
@@ -28,24 +34,20 @@ class ADC:
     def __init__(self, gain=1):
         self._hardware_initialized = False
         try:
-            self._bus = SMBus(1)  # 1 indicates /dev/i2c-1.
-            self._address = 0x48  # Default i2c address for the ADS1115.
-            self._gain = gain
+            i2c = busio.I2C(board.SCL, board.SDA)
+            self._adc = ADS.ADS1115(i2c)
+            self._channel = AnalogIn(self._adc, ADS.P0)
+            self._adc.gain = gain
             self._hardware_initialized = True
-        except (ValueError, FileNotFoundError) as e:
-            print(f'Failed to initialize hardware: {e}')
+        except ValueError as e:
+            print(f"Failed to initialize hardware: {e}")
 
-    def read_adc(self, channel=0):
-        ''' Read data from ADC. '''
+    def read_adc(self) -> str:
+        ''' Send request to ADC. '''
         if not self._hardware_initialized:
             return 'ERR'
         try:
-            write = i2c_msg.write(self._address, [0x01, 0x50 | (channel & 0x07), 0x00, 0x83])
-            self._bus.i2c_rdwr(write)
-            read = i2c_msg.read(self._address, 2)
-            self._bus.i2c_rdwr(read)
-            value = (read.buf[0][0] << 8 | read.buf[1][0]) >> 4
+            value = self._channel.value
             return f'{value:.2f}' if f'{value:.2f}' != '-0.00' else '0.00'
-        except IOError as io_error:
-            print(f'Failed to read from ADC: {io_error}')
+        except IOError:
             return 'ERR'
