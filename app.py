@@ -3,9 +3,8 @@
 This is a simple Kivy application to test the performance of the ADC and MCP23017.
 '''
 
-
 # Config settings must be applied before other imports.
-import settings.kivy_config  # Uncomment for Comfile.
+import settings.kivy_config
 
 # Standard imports.
 import time
@@ -15,7 +14,8 @@ from collections import deque
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import (
-    DictProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
+    DictProperty, ListProperty, 
+    NumericProperty, ObjectProperty, StringProperty
 )
 from kivy.uix.screenmanager import NoTransition, ScreenManager
 from kivymd.app import MDApp
