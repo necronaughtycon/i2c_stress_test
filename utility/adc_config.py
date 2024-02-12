@@ -17,6 +17,11 @@ adc = ADC(amount=100, held=10)
 data = adc.request_data()
 '''
 
+busio = None
+board = None
+ADS = None
+AnalogIn = None
+
 try:
     import board
     import busio
@@ -33,6 +38,9 @@ class ADC:
 
     def __init__(self, gain=1):
         self._hardware_initialized = False
+        if busio is None or board is None or ADS is None or AnalogIn is None:
+            print("Failed to import necessary modules")
+            return
         try:
             i2c = busio.I2C(board.SCL, board.SDA)
             self._adc = ADS.ADS1115(i2c)
