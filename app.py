@@ -1,11 +1,10 @@
 #!/venv/bin/python3
 '''
-This is a simple Kivy application to test the performance of the ADC and MCP23017.
+This is a simple Kivy application to test the performance of the ADC1115 and MCP23017.
 '''
 
-
 # Config settings must be applied before other imports.
-import settings.kivy_config  # Uncomment for Comfile.
+import settings.kivy_config
 
 # Standard imports.
 import time
