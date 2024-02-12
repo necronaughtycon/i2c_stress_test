@@ -81,6 +81,10 @@ class StressTestApp(MDApp):
             self.load_kv_file(info)
             self.sm.add_widget(info['class'](name=name))
 
+    def switch_screen(self, screen_name):
+        ''' Switch to the specified screen. '''
+        self.sm.current = screen_name
+
     def start_adc_test(self, requests, frequency, stored):
         ''' Test to simulate ADC readings. '''
         self.adc = ADC(amount=requests)
