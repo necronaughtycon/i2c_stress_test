@@ -32,10 +32,10 @@ class ADC:
             self._address = 0x48  # Default i2c address for the ADS1115.
             self._gain = gain
             self._hardware_initialized = True
-        except ValueError as e:
+        except (ValueError, FileNotFoundError) as e:
             print(f'Failed to initialize hardware: {e}')
 
-    def read_adc(self, channel):
+    def read_adc(self, channel=0):
         ''' Read data from ADC. '''
         if not self._hardware_initialized:
             return 'ERR'
