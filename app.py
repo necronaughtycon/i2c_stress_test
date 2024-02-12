@@ -53,7 +53,6 @@ class StressTestApp(MDApp):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.adc = ADC()
         self.sm = ScreenManager(transition=NoTransition())
 
     def build(self):
@@ -104,7 +103,6 @@ class StressTestApp(MDApp):
 
     def handle_adc_data(self, data_held):
         ''' Handle the ADC data. '''
-        # Do something (print a number for now).
         adc_data = self.adc.read_adc()
         if adc_data != 'ERR':
             self.adc_requests_received += 1
