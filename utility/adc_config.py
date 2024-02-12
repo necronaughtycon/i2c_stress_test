@@ -17,10 +17,6 @@ adc = ADC(amount=100, held=10)
 data = adc.request_data()
 '''
 
-busio = None
-board = None
-ADS = None
-AnalogIn = None
 
 try:
     import board
@@ -28,7 +24,10 @@ try:
     import adafruit_ads1x15.ads1115 as ADS
     from adafruit_ads1x15.analog_in import AnalogIn
 except (ImportError, NotImplementedError):
-    pass
+    busio = None
+    board = None
+    ADS = None
+    AnalogIn = None
 
 
 class ADC:
@@ -39,16 +38,12 @@ class ADC:
     def __init__(self, gain=1):
         self._hardware_initialized = False
         if busio is None or board is None or ADS is None or AnalogIn is None:
-            print("Failed to import necessary modules")
             return
-        try:
-            i2c = busio.I2C(board.SCL, board.SDA)
-            self._adc = ADS.ADS1115(i2c)
-            self._channel = AnalogIn(self._adc, ADS.P0)
-            self._adc.gain = gain
-            self._hardware_initialized = True
-        except (ValueError, NotImplementedError):
-            pass
+        i2c = busio.I2C(board.SCL, board.SDA)
+        self._adc = ADS.ADS1115(i2c)
+        self._channel = AnalogIn(self._adc, ADS.P0)
+        self._adc.gain = gain
+        self._hardware_initialized = True
 
     def read_adc(self) -> str:
         ''' Send request to ADC. '''
