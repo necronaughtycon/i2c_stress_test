@@ -17,13 +17,10 @@ adc = ADC(amount=100, held=10)
 data = adc.request_data()
 '''
 
-try:
-    import board
-    import busio
-    import adafruit_ads1x15.ads1115 as ADS
-    from adafruit_ads1x15.analog_in import AnalogIn
-except ImportError as import_error:
-    print(f'Error: {import_error}\nPlease install the required libraries.\n')
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
 
 
 class ADC:
@@ -39,7 +36,7 @@ class ADC:
             self._channel = AnalogIn(self._adc, ADS.P0)
             self._adc.gain = gain
             self._hardware_initialized = True
-        except ValueError as e:
+        except (ValueError, NotImplementedError) as e:
             print(f"Failed to initialize hardware: {e}")
 
     def read_adc(self) -> str:
