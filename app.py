@@ -103,7 +103,8 @@ class StressTestApp(MDApp):
 
     def handle_adc_data(self, data_held):
         ''' Handle the ADC data. '''
-        adc_data = self.adc.read_adc()
+        adc = ADC()
+        adc_data = adc.read_adc()
         if adc_data != 'ERR':
             self.adc_requests_received += 1
             data_held.append(adc_data)
