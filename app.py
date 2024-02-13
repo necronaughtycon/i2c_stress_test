@@ -7,8 +7,8 @@ This is a simple Kivy application to test the performance of the ADC1115 and MCP
 import settings.kivy_config
 
 # Standard imports.
-import time
 from collections import deque
+import time
 
 # Third-party imports.
 from kivy.clock import Clock
