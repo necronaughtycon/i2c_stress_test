@@ -43,6 +43,7 @@ class StressTestApp(MDApp):
     adc_requests_received = NumericProperty()
     adc_payload = StringProperty()
     adc_bus_status = StringProperty('OK')
+    adc_stored = ListProperty([])
     adc_task = None
     adc_update_task = None
 
@@ -85,19 +86,22 @@ class StressTestApp(MDApp):
         ''' Test to simulate ADC readings. '''
         self.adc_requests = int(requests)
         self.adc_requests_received = 0
-        delay = int(frequency) / int
+        self.adc_stored = []
+        delay = int(frequency) / self.adc_requests
         self.schedule_adc_intervals()
         self.show_adc_dialog()
-        self.get_adc_data(stored)
+        self.get_adc_data(delay, stored)
         
-    def get_adc_data(self, list_size):
+    def get_adc_data(self, delay, stored):
         ''' Get the ADC payload. '''
-        data_held = deque(maxlen=int(list_size))
+        data_held = deque(maxlen=int(stored))
         for _ in range(self.adc_requests):
             self.adc_payload = self.adc.read_adc(delay)
             if self.adc_payload != 'ERR':
                 self.adc_requests_received += 1
+                data_held.append(self.adc_payload)
                 self.adc_bus_status = 'OK'
+                self.adc_stored = list(data_held)
             else:
                 self.adc_bus_status = 'FAILED'
                 self.stop_adc_test()
@@ -109,7 +113,7 @@ class StressTestApp(MDApp):
         
     def update_adc_information(self, dt):
         ''' Update the ADC information. '''
-        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
+        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored), self.adc_payload)
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
