@@ -39,15 +39,16 @@ class MCPTestScreen(MDScreen):
 class StressTestApp(MDApp):
     ''' Main application class. '''
 
-    adc_stored = ListProperty([])
     adc_requests = NumericProperty()
     adc_requests_received = NumericProperty()
+    adc_payload = StringProperty()
     adc_bus_status = StringProperty('OK')
     adc_task = None
     adc_update_task = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.adc = ADC()
         self.sm = ScreenManager(transition=NoTransition())
 
     def build(self):
@@ -84,31 +85,31 @@ class StressTestApp(MDApp):
         ''' Test to simulate ADC readings. '''
         self.adc_requests = int(requests)
         self.adc_requests_received = 0
+        delay = int(frequency) / int
+        self.schedule_adc_intervals()
         self.show_adc_dialog()
-        self.schedule_adc_intervals(frequency, stored)
+        self.get_adc_data(stored)
         
-    def schedule_adc_intervals(self, frequency, stored):
+    def get_adc_data(self, list_size):
+        ''' Get the ADC payload. '''
+        data_held = deque(maxlen=int(list_size))
+        for _ in range(self.adc_requests):
+            self.adc_payload = self.adc.read_adc(delay)
+            if self.adc_payload != 'ERR':
+                self.adc_requests_received += 1
+                self.adc_bus_status = 'OK'
+            else:
+                self.adc_bus_status = 'FAILED'
+                self.stop_adc_test()
+                break
+        
+    def schedule_adc_intervals(self):
         ''' Schedule the intervals for the ADC test. '''
-        time_interval = int(frequency) / int(self.adc_requests)
-        data_held = deque(maxlen=int(stored))
-        self.adc_task = Clock.schedule_interval(
-            lambda dt: self.handle_adc_data(data_held), 
-            time_interval
-        )
-
-    def handle_adc_data(self, data_held):
-        ''' Handle the ADC data. '''
-        adc = ADC()
-        adc_data = adc.read_adc()
-        if adc_data != 'ERR':
-            self.adc_requests_received += 1
-            data_held.append(adc_data)
-            self.adc_stored = list(data_held)
-            self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
-            self.adc_bus_status = 'OK'
-        else:
-            self.adc_bus_status = 'FAILED'
-            self.stop_adc_test()
+        self.adc_task = Clock.schedule_interval(self.update_adc_information, 1 / 30)
+        
+    def update_adc_information(self, dt):
+        ''' Update the ADC information. '''
+        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored))
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''

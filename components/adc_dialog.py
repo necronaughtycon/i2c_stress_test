@@ -3,17 +3,17 @@ This module contains the classes for the ADC test dialog and the ADC test result
 '''
 
 from kivy.uix.widget import Widget
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonText
 from kivymd.uix.dialog import (
     MDDialog,
-    MDDialogIcon,
-    MDDialogHeadlineText,
-    MDDialogSupportingText,
     MDDialogButtonContainer,
     MDDialogContentContainer,
+    MDDialogHeadlineText,
+    MDDialogIcon,
+    MDDialogSupportingText,
 )
 from kivymd.uix.divider import MDDivider
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.list import (
     MDListItem,
     MDListItemLeadingIcon,

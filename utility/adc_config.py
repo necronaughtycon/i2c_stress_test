@@ -17,6 +17,7 @@ adc = ADC(amount=100, held=10)
 data = adc.request_data()
 '''
 
+import time
 
 try:
     import board
@@ -45,12 +46,14 @@ class ADC:
         self._adc.gain = gain
         self._hardware_initialized = True
 
-    def read_adc(self) -> str:
+    def read_adc(self, delay) -> str:
         ''' Send request to ADC. '''
         if not self._hardware_initialized:
             return 'ERR'
         try:
             value = self._channel.value
-            return f'{value:.2f}' if f'{value:.2f}' != '-0.00' else '0.00'
+            time.sleep(delay)
+            return str(value)
+            # return f'{value:.2f}' if f'{value:.2f}' != '-0.00' else '0.00'
         except IOError:
             return 'ERR'
