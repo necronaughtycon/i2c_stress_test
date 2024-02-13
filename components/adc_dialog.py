@@ -1,3 +1,7 @@
+''' 
+This module contains the classes for the ADC test dialog and the ADC test results dialog. 
+'''
+
 from kivy.uix.widget import Widget
 from kivymd.uix.button import MDButton, MDButtonText
 from kivymd.uix.dialog import (
