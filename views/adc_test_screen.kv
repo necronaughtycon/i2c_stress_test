@@ -61,17 +61,6 @@
                         MDSliderHandle:
                         MDSliderValueLabel:
 
-                    ValueField:
-                        text: str(round(adc_stored.value))
-                        icon: 'folder-download'
-                        field: 'Stored'
-                        on_text: adc_stored.value = min(max(int(self.text), 1), 2000) if self.text.isdigit() else 0
-                    MDSlider:
-                        id: adc_stored
-                        range: (1, 2000)
-                        MDSliderHandle:
-                        MDSliderValueLabel:
-
         MDBoxLayout:
             size_hint_y: None
             height: dp(48)
@@ -84,7 +73,7 @@
                 height: dp(48)
                 size_hint_x: 1
                 radius: 7
-                on_press: app.start_adc_test(adc_requests.value, adc_frequency.value, adc_stored.value)
+                on_press: app.start_adc_test(adc_requests.value, adc_frequency.value)
                 MDButtonText:
                     text: 'START'
                     font_style: 'Title'

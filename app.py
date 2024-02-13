@@ -4,7 +4,6 @@ This is a simple Kivy application to test the performance of the ADC1115 and MCP
 '''
 
 # Standard imports.
-from collections import deque
 import time
 
 # Third-party imports.
@@ -43,7 +42,6 @@ class StressTestApp(MDApp):
     adc_requests_received = NumericProperty()
     adc_payload = StringProperty()
     adc_bus_status = StringProperty('OK')
-    adc_stored = ListProperty([])
     adc_task = None
     adc_update_task = None
 
@@ -82,11 +80,10 @@ class StressTestApp(MDApp):
         ''' Switch to the specified screen. '''
         self.sm.current = screen_name
 
-    def start_adc_test(self, requests, frequency, stored):
+    def start_adc_test(self, requests, frequency):
         ''' Test to simulate ADC readings. '''
         self.adc_requests = int(requests)
         self.adc_requests_received = 0
-        self.adc_stored = []
         delay = int(frequency) / self.adc_requests
         self.schedule_adc_intervals()
         self.show_adc_dialog()
@@ -94,7 +91,6 @@ class StressTestApp(MDApp):
         
     def get_adc_data(self, delay, stored):
         ''' Get the ADC payload. '''
-        data_held = deque(maxlen=int(stored))
         for _ in range(self.adc_requests):
             self.adc_payload = self.adc.read_adc(delay)
             if self.adc_payload != 'ERR':
