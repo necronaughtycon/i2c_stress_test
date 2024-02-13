@@ -61,6 +61,7 @@ class ADC:
                     self._requests_filled += 1
                     time.sleep(delay)
                     # return f'{value:.2f}' if f'{value:.2f}' != '-0.00' else '0.00'
+                    return value
                 except IOError:
                     return 'ERR'
                 if self._stop:
@@ -72,10 +73,10 @@ class ADC:
         self._stop = True
         return total_payload_size
 
-    # def get_latest_payload(self):
-    #     ''' Get the latest payload. '''
-    #     return self._latest_payload
+    def get_latest_payload(self) -> str:
+        ''' Get the latest payload. '''
+        return self._latest_payload
 
-    # def get_requests_filled(self):
-    #     ''' Get the amount of requests filled. '''
-    #     return self._requests_filled
+    def get_requests_filled(self) -> int:
+        ''' Get the requests filled. '''
+        return self._requests_filled

@@ -84,7 +84,6 @@ class StressTestApp(MDApp):
         ''' Test to simulate ADC readings. '''
         self.adc_requests = int(requests)
         self.get_adc_data(frequency)
-        self.schedule_adc_intervals()
 
     def get_adc_data(self, frequency):
         ''' Get the ADC payload. '''
@@ -93,6 +92,7 @@ class StressTestApp(MDApp):
         if value != 'ERR':
             self.show_adc_dialog()
         else:
+            self.adc_bus_status = 'FAILED'
             self.stop_adc_test()
 
     def schedule_adc_intervals(self):
@@ -112,6 +112,8 @@ class StressTestApp(MDApp):
             self.adc_dialog.button.bind(on_press=self.stop_adc_test)
             self.adc_dialog.dialog.bind(on_dismiss=self.stop_adc_test)
         self.adc_dialog.open()
+        self.schedule_adc_intervals()
+        
 
     def show_adc_results(self):
         ''' Display the results of the ADC test. '''
@@ -126,10 +128,9 @@ class StressTestApp(MDApp):
         if self.adc_task:
             self.adc_task.cancel()
             self.adc_task = None
-            self.adc_stored.clear()
             if hasattr(self, 'adc_dialog'):
                 self.adc_dialog.close()
-            self.show_adc_results()
+        self.show_adc_results()
 
 
 if __name__ == '__main__':
