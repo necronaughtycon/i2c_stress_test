@@ -1,4 +1,4 @@
-#!/venv/bin/python3
+#!/usr/bin/env python3
 '''
 This is a simple Kivy application to test the performance of the ADC1115 and MCP23017.
 '''

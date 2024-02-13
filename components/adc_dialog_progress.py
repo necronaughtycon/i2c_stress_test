@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from kivy.uix.widget import Widget
 from kivymd.uix.button import MDButton, MDButtonText
 from kivymd.uix.dialog import (
