@@ -38,6 +38,8 @@ class ADC:
 
     def __init__(self, gain=1):
         self._hardware_initialized = False
+        self._requests_filled = 0
+        self._latest_payload = None
         self._stop = False
         if busio is None or board is None or ADS is None or AnalogIn is None:
             return
@@ -55,14 +57,25 @@ class ADC:
             for _ in range(requests):
                 try:
                     value = self._channel.value
+                    self._latest_payload = value
+                    self._requests_filled += 1
                     time.sleep(delay)
-                    return str(value)
                     # return f'{value:.2f}' if f'{value:.2f}' != '-0.00' else '0.00'
                 except IOError:
                     return 'ERR'
                 if self._stop:
                     break
 
-    def stop(self):
+    def stop(self) -> int:
         ''' Stop the ADC. '''
+        total_payload_size = self._requests_filled
         self._stop = True
+        return total_payload_size
+
+    # def get_latest_payload(self):
+    #     ''' Get the latest payload. '''
+    #     return self._latest_payload
+
+    # def get_requests_filled(self):
+    #     ''' Get the amount of requests filled. '''
+    #     return self._requests_filled

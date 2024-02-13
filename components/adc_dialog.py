@@ -28,9 +28,8 @@ class ADCDialog:
         self.app = app
         
         # Content setup.
-        self.payload = MDListItemSupportingText(text='Payload Size: 0', halign='center')
+        self.requests = MDListItemSupportingText(text='Payload Size: 0', halign='center')
         self.requests_received = MDListItemSupportingText(text='Requests Received: 0', halign='center')
-        self.data_stored = MDListItemSupportingText(text='Data Stored: 0', halign='center')
         self.last_payload = MDListItemSupportingText(text='Last Payload: None', halign='center')
         self.progress = MDCircularProgressIndicator(
             size_hint=(None, None), size=('40dp', '40dp'),
@@ -40,9 +39,8 @@ class ADCDialog:
         # Container setup.
         self.container = self._create_container()
         self.container.add_widget(MDDivider())
-        self.container.add_widget(MDListItem(self.payload))
+        self.container.add_widget(MDListItem(self.requests))
         self.container.add_widget(MDListItem(self.requests_received))
-        self.container.add_widget(MDListItem(self.data_stored))
         self.container.add_widget(MDListItem(self.last_payload))
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDBoxLayout(size_hint_y=None, height='20dp'))
@@ -75,10 +73,9 @@ class ADCDialog:
         container = MDDialogContentContainer(orientation='vertical')
         return container
 
-    def update_information(self, payload, received, list_size, last_payload):
-        self.payload.text = f'Payload Size: {payload}'
+    def update_information(self, requests, received, last_payload):
+        self.requests.text = f'Payload Size: {requests}'
         self.requests_received.text = f'Requests Received: {received}'
-        self.data_stored.text = f'Data Stored: {list_size}'
         self.last_payload.text = f'Last Payload: {last_payload}'
     
     def open(self):

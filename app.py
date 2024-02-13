@@ -83,33 +83,27 @@ class StressTestApp(MDApp):
     def start_adc_test(self, requests, frequency):
         ''' Test to simulate ADC readings. '''
         self.adc_requests = int(requests)
-        self.adc_requests_received = 0
-        delay = int(frequency) / self.adc_requests
+        self.get_adc_data(frequency)
         self.schedule_adc_intervals()
-        self.show_adc_dialog()
-        self.get_adc_data(delay, stored)
-        
-    def get_adc_data(self, delay, stored):
+
+    def get_adc_data(self, frequency):
         ''' Get the ADC payload. '''
-        for _ in range(self.adc_requests):
-            self.adc_payload = self.adc.read_adc(delay)
-            if self.adc_payload != 'ERR':
-                self.adc_requests_received += 1
-                data_held.append(self.adc_payload)
-                self.adc_bus_status = 'OK'
-                self.adc_stored = list(data_held)
-            else:
-                self.adc_bus_status = 'FAILED'
-                self.stop_adc_test()
-                break
-        
+        delay = int(frequency) / self.adc_requests
+        value = self.adc.read_adc(self.adc_requests, delay)
+        if value != 'ERR':
+            self.show_adc_dialog()
+        else:
+            self.stop_adc_test()
+
     def schedule_adc_intervals(self):
         ''' Schedule the intervals for the ADC test. '''
-        self.adc_task = Clock.schedule_interval(self.update_adc_information, 1 / 30)
-        
+        self.adc_task = Clock.schedule_interval(self.update_adc_information, 1/60)  # 60 FPS.
+
     def update_adc_information(self, dt):
         ''' Update the ADC information. '''
-        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, len(self.adc_stored), self.adc_payload)
+        self.adc_payload = str(self.adc._latest_payload)
+        self.adc_requests_received = self.adc._requests_filled
+        self.adc_dialog.update_information(self.adc_requests, self.adc_requests_received, self.adc_payload)
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
@@ -128,6 +122,7 @@ class StressTestApp(MDApp):
 
     def stop_adc_test(self, instance=None):
         ''' Stop and unschedule the ADC test. '''
+        self.adc_requests_received = self.adc.stop()
         if self.adc_task:
             self.adc_task.cancel()
             self.adc_task = None
