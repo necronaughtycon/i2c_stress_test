@@ -38,12 +38,15 @@ class ADC:
     '''
 
     def __init__(self, gain=1, delay=0.1):
-        self._hardware_initialized = False
-        self._latest_payload = None
-        self._delay = delay
+        self.payload = None
+        self.requests_filled = 0
+        self.delay = delay
         self._stop_event = threading.Event()
+        self._hardware_initialized = False
+        if busio is None or board is None or ADS is None or AnalogIn is None:
+            return
         i2c = busio.I2C(board.SCL, board.SDA)
-        self._adc = ADS(i2c)
+        self._adc = ADS.ADS1115(i2c)
         self._channel = AnalogIn(self._adc, ADS.P0)
         self._adc.gain = gain
         self._hardware_initialized = True
@@ -54,28 +57,21 @@ class ADC:
         ''' Continuously read ADC until stop event is set. '''
         while not self._stop_event.is_set():
             self.read_adc()
-            time.sleep(self._delay)
+            time.sleep(self.delay)
 
     def read_adc(self) -> str:
         ''' Send request to ADC. '''
         if not self._hardware_initialized:
-            return 'ERR'
+            self.payload = 'ERR'
         try:
-            value = self._channel.value
-            self._latest_payload = value
-            self._requests_filled += 1
+            self.payload = self._channel.value
+            print(self.payload)
+            self.requests_filled += 1
         except IOError:
-            return 'ERR'
-
-    def get_latest_payload(self) -> str:
-        ''' Get the latest payload. '''
-        return str(self._latest_payload)
-
-    def get_requests_filled(self) -> int:
-        ''' Get the requests filled. '''
-        return self._requests_filled
+            self.payload = 'ERR'
 
     def stop(self):
-        ''' Stop the ADC thread. '''
+        ''' Stop the ADC reading thread. '''
+        self.requests_filled = 0
         self._stop_event.set()
         self._thread.join()
