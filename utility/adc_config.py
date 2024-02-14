@@ -65,10 +65,14 @@ class ADC:
             self.payload = 'ERR'
         try:
             self.payload = self._channel.value
-            print(self.payload)
             self.requests_filled += 1
+            print(f'ADC: {self.requests_filled}')
         except IOError:
             self.payload = 'ERR'
+
+    def get_requests_filled(self):
+        ''' Get the amount of requests filled. '''
+        return self.requests_filled
 
     def stop(self):
         ''' Stop the ADC reading thread. '''

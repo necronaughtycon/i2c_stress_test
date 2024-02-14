@@ -1,6 +1,9 @@
-fps = 1 / 60
-print(f'FPS: {fps}')
-requests = 32
+requests = 100
 frequency = 1
 delay = frequency / requests
-print(f'Delay: {delay}')
+print(delay)
+
+elapsed = 60
+requests_filled = 500
+print(requests_filled / elapsed)
+

@@ -42,7 +42,9 @@ class StressTestApp(MDApp):
     adc_frequency = NumericProperty()
     adc_requests_filled = NumericProperty()
     adc_bus_status = StringProperty('OK')
+    adc_last = NumericProperty()
     adc_task = None
+    adc_missed_task = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -89,18 +91,33 @@ class StressTestApp(MDApp):
         ''' Schedule the intervals for the ADC test. '''
         self.show_adc_dialog()
         delay = self.adc_frequency / self.adc_requests
+        print(f'ADC: {self.adc_requests} requests at {self.adc_frequency} seconds, delay: {delay}')
         self.adc = ADC(delay=delay)
-        self.adc_task = Clock.schedule_interval(self.update_adc_information, 1 / 60)
+        self.adc_task = Clock.schedule_interval(self.update_adc_information, self.adc_frequency)
         self.show_adc_dialog()
 
     def update_adc_information(self, *args):
         ''' Update the ADC info on screen. '''
         if self.adc.payload != 'ERR':
-            self.adc_requests_filled = self.adc.requests_filled
+            self.adc_requests_filled = self.adc.get_requests_filled()
+            missed_payloads = self.check_missed_payloads_adc()
+            print(f'APP: Missed Payloads: {missed_payloads}')
             self.adc_dialog.update_information(self.adc_requests, self.adc_requests_filled, self.adc.payload)
         else:
             self.adc_bus_status = 'FAILED'
             self.stop_adc_test()
+
+    def check_missed_payloads_adc(self, *args):
+        ''' Check for missed payloads in the ADC test. '''
+        current_requests = self.adc.get_requests_filled()
+        requests_this_interval = current_requests - self.adc_last
+        print(f'APP: Current Requests: {current_requests}, Last Requests: {self.adc_last}, Requests This Interval: {requests_this_interval}')
+        self.adc_last = current_requests
+        if -2 <= requests_this_interval <= 2:
+            return self.adc_requests - requests_this_interval
+        return 0
+            
+        
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
@@ -124,6 +141,10 @@ class StressTestApp(MDApp):
             self.adc_task = None
             if hasattr(self, 'adc_dialog'):
                 self.adc_dialog.close()
+        if self.adc_missed_task:
+            self.adc_missed_task.cancel()
+            self.adc_missed_task = None
+            self.adc_last = 0
         self.adc.stop()
         self.show_adc_results()
 
