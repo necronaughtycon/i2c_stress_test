@@ -1,6 +1,6 @@
-from utility import ADC, ADC2
-
-adc = ADC()
-adc2 = ADC2()
-print(f'SMBus2: {adc.read_adc()}')
-print(f'Adafruit: {adc2.read_adc()}')
+fps = 1 / 60
+print(f'FPS: {fps}')
+requests = 32
+frequency = 1
+delay = frequency / requests
+print(f'Delay: {delay}')

@@ -17,6 +17,7 @@ adc = ADC(amount=100, held=10)
 data = adc.request_data()
 '''
 
+import threading
 import time
 
 try:
@@ -36,47 +37,45 @@ class ADC:
     This class is used to interface with the ADS1115 Analog-to-Digital Converter.
     '''
 
-    def __init__(self, gain=1):
+    def __init__(self, gain=1, delay=0.1):
         self._hardware_initialized = False
-        self._requests_filled = 0
         self._latest_payload = None
-        self._stop = False
-        if busio is None or board is None or ADS is None or AnalogIn is None:
-            return
+        self._delay = delay
+        self._stop_event = threading.Event()
         i2c = busio.I2C(board.SCL, board.SDA)
-        self._adc = ADS.ADS1115(i2c)
+        self._adc = ADS(i2c)
         self._channel = AnalogIn(self._adc, ADS.P0)
         self._adc.gain = gain
         self._hardware_initialized = True
+        self._thread = threading.Thread(target=self._read_adc_continuous)
+        self._thread.start()
 
-    def read_adc(self, requests, delay) -> str:
+    def _read_adc_continuous(self):
+        ''' Continuously read ADC until stop event is set. '''
+        while not self._stop_event.is_set():
+            self.read_adc()
+            time.sleep(self._delay)
+
+    def read_adc(self) -> str:
         ''' Send request to ADC. '''
         if not self._hardware_initialized:
             return 'ERR'
-        if not self._stop:
-            for _ in range(requests):
-                try:
-                    value = self._channel.value
-                    self._latest_payload = value
-                    self._requests_filled += 1
-                    time.sleep(delay)
-                    # return f'{value:.2f}' if f'{value:.2f}' != '-0.00' else '0.00'
-                    return value
-                except IOError:
-                    return 'ERR'
-                if self._stop:
-                    break
-
-    def stop(self) -> int:
-        ''' Stop the ADC. '''
-        total_payload_size = self._requests_filled
-        self._stop = True
-        return total_payload_size
+        try:
+            value = self._channel.value
+            self._latest_payload = value
+            self._requests_filled += 1
+        except IOError:
+            return 'ERR'
 
     def get_latest_payload(self) -> str:
         ''' Get the latest payload. '''
-        return self._latest_payload
+        return str(self._latest_payload)
 
     def get_requests_filled(self) -> int:
         ''' Get the requests filled. '''
         return self._requests_filled
+
+    def stop(self):
+        ''' Stop the ADC thread. '''
+        self._stop_event.set()
+        self._thread.join()
