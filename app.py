@@ -111,11 +111,15 @@ class StressTestApp(MDApp):
         ''' Check for missed payloads in the ADC test. '''
         current_requests = self.adc.get_requests_filled()
         requests_this_interval = current_requests - self.adc_last
-        print(f'APP: Current Requests: {current_requests}, Last Requests: {self.adc_last}, Requests This Interval: {requests_this_interval}')
+        print(f'APP: Request Goal: {self.adc_requests}')
+        print(f'Current Requests: {current_requests}')
+        print(f'Last Requests: {self.adc_last}')
+        print(f'Requests This Interval: {requests_this_interval}\n')
         self.adc_last = current_requests
-        if -2 <= requests_this_interval <= 2:
-            return self.adc_requests - requests_this_interval
-        return 0
+        missed = self.adc_requests - requests_this_interval
+        if -2 <=  missed <= 2:
+            return 0
+        return missed
             
         
 

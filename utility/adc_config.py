@@ -66,6 +66,8 @@ class ADC:
         try:
             self.payload = self._channel.value
             self.requests_filled += 1
+            print(self.requests_filled)
+            print(self.payload)
         except IOError:
             self.payload = 'ERR'
 
