@@ -28,11 +28,11 @@ from utility import ADC
 class ADCTestScreen(MDScreen):
     ''' ADC test screen. '''
 
-    adc_requests = NumericProperty()
-    adc_frequency = NumericProperty()
-    adc_requests_filled = NumericProperty()
-    adc_bus_status = StringProperty('OK')
-    adc_last = NumericProperty()
+    requests = NumericProperty()
+    frequency = NumericProperty()
+    requests_filled = NumericProperty()
+    bus_status = StringProperty('OK')
+    last = NumericProperty()
     adc_task = None
     adc_missed_task = None
 
@@ -42,8 +42,8 @@ class ADCTestScreen(MDScreen):
 
     def start_adc_test(self, requests, frequency):
         ''' Test to simulate ADC readings. '''
-        self.adc_requests = int(requests)
-        self.adc_frequency = int(frequency)
+        self.requests = int(requests)
+        self.frequency = int(frequency)
         self.schedule_adc()
 
     def schedule_adc(self):
@@ -51,35 +51,35 @@ class ADCTestScreen(MDScreen):
         # app = MDApp.get_running_app()
         # app.show_adc_dialog()
         self.show_adc_dialog()
-        delay = self.adc_frequency / self.adc_requests
-        print(f'ADC: {self.adc_requests} requests at {self.adc_frequency} seconds, delay: {delay}')
+        delay = self.frequency / self.requests
+        print(f'ADC: {self.requests} requests at {self.frequency} seconds, delay: {delay}')
         self.adc = ADC(delay=delay)
-        self.adc_task = Clock.schedule_interval(self.update_adc_information, self.adc_frequency)
+        self.adc_task = Clock.schedule_interval(self.update_adc_information, self.frequency)
         self.show_adc_dialog()
 
     def update_adc_information(self, *args):
         ''' Update the ADC info on screen. '''
         app = MDApp.get_running_app()
         if self.adc.payload != 'ERR':
-            self.adc_requests_filled = self.adc.get_requests_filled()
+            self.requests_filled = self.adc.get_requests_filled()
             missed_payloads = self.check_missed_payloads_adc()
             print(f'APP: Missed Payloads: {missed_payloads}')
-            app.adc_dialog.update_information(self.adc_requests, self.adc_requests_filled, self.adc.payload)
+            app.adc_dialog.update_information(self.requests, self.requests_filled, self.adc.payload)
         else:
-            self.adc_bus_status = 'FAILED'
+            self.bus_status = 'FAILED'
             app.stop_adc_test()
 
     def check_missed_payloads_adc(self, *args):
         ''' Check for missed payloads in the ADC test. '''
         app = MDApp.get_running_app()
         current_requests = self.adc.get_requests_filled()
-        requests_this_interval = current_requests - self.adc_last
-        print(f'APP: Request Goal: {self.adc_requests}')
+        requests_this_interval = current_requests - self.last
+        print(f'APP: Request Goal: {self.requests}')
         print(f'Current Requests: {current_requests}')
-        print(f'Last Requests: {self.adc_last}')
+        print(f'Last Requests: {self.last}')
         print(f'Requests This Interval: {requests_this_interval}\n')
         self.adc_last = current_requests
-        missed = self.adc_requests - requests_this_interval
+        missed = self.requests - requests_this_interval
         if -2 <=  missed <= 2:
             return 0
         return missed
@@ -98,7 +98,7 @@ class ADCTestScreen(MDScreen):
         app = MDApp.get_running_app()
         if not hasattr(app, 'adc_results'):
             app.adc_results = ADCResults(app)
-        app.adc_results.update_status(self.adc_requests, self.adc_requests_filled, self.adc_bus_status)
+        app.adc_results.update_status(self.requests, self.requests_filled, self.bus_status)
         app.adc_results.open()
 
     def stop_adc_test(self, instance=None):

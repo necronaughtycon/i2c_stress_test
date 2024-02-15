@@ -79,4 +79,5 @@ class ADC:
         ''' Stop the ADC reading thread. '''
         self.requests_filled = 0
         self._stop_event.set()
-        self._thread.join()
+        if self._thread is not None:
+            self._thread.join()
