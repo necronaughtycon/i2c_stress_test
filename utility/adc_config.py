@@ -41,6 +41,7 @@ class ADC:
         self.payload = None
         self.requests_filled = 0
         self.delay = delay
+        self._thread = None
         self._stop_event = threading.Event()
         self._hardware_initialized = False
         if busio is None or board is None or ADS is None or AnalogIn is None:
