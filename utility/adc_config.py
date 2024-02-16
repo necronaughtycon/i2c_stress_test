@@ -58,6 +58,7 @@ class ADC:
         ''' Continuously read ADC until stop event is set. '''
         while not self._stop_event.is_set():
             self.read_adc()
+            self.requests_filled += 1
             time.sleep(self.delay)
 
     def read_adc(self) -> str:
@@ -66,19 +67,15 @@ class ADC:
             self.payload = 'ERR'
         try:
             self.payload = self._channel.value
-            self.requests_filled += 1
-            print(self.requests_filled)
-            print(self.payload)
         except IOError:
             self.payload = 'ERR'
 
-    def get_requests_filled(self):
+    def get_requests_filled(self) -> int:
         ''' Get the amount of requests filled. '''
         return self.requests_filled
 
     def stop(self):
         ''' Stop the ADC reading thread. '''
-        self.requests_filled = 0
         self._stop_event.set()
         if self._thread is not None:
             self._thread.join()
