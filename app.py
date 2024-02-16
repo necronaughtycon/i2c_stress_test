@@ -89,13 +89,14 @@ class ADCTestScreen(MDScreen):
 
     def update_adc_information(self, *args):
         ''' Update the ADC info on screen. '''
-        print(self.adc.payload)
-        if self.adc.payload != 'ERR':
+        payload = self.adc.get_payload()
+        print(payload)
+        if payload != 'ERR':
             self.requests_filled = self.adc.get_requests_filled()
-            self.adc_dialog.update_information(self.requests, self.requests_filled, self.adc.payload)
+            self.adc_dialog.update_information(self.requests, self.requests_filled, payload)
         else:
             self.bus_status = 'FAILED'
-            app.stop_adc_test()
+            self.stop_adc_test()
 
     def check_missed_payloads_adc(self, *args):
         ''' Check for missed payloads in the ADC test. '''

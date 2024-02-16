@@ -73,6 +73,12 @@ class ADC:
     def get_requests_filled(self) -> int:
         ''' Get the amount of requests filled. '''
         return self.requests_filled
+    
+    def get_payload(self) -> str:
+        ''' Get the payload from the ADC. '''
+        if self.payload is None:
+            return 'ERR'
+        return str(self.payload)
 
     def stop(self):
         ''' Stop the ADC reading thread. '''
