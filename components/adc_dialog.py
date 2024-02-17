@@ -151,5 +151,4 @@ class ADCResults:
         self.dialog.open()
     
     def close(self):
-        print('Closing dialog')
         self.dialog.dismiss()

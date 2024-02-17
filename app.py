@@ -90,7 +90,6 @@ class ADCTestScreen(MDScreen):
     def update_adc_information(self, *args):
         ''' Update the ADC info on screen. '''
         payload = self.adc.get_payload()
-        print(payload)
         if payload != 'ERR':
             self.requests_filled = self.adc.get_requests_filled()
             self.adc_dialog.update_information(self.requests, self.requests_filled, payload)
