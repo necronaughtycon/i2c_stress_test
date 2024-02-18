@@ -42,6 +42,7 @@ class MCP:
             'panel_power': self._mcp.get_pin(10)
         }
         self.setup_pins()
+        self.cycle_thread = None
 
     def setup_pins(self):
         ''' Setup the MCP23017 pins. '''
@@ -77,11 +78,30 @@ class MCP:
 
     def thread_sequence(self, sequence):
         ''' Run the specified sequence in a new thread. '''
-        cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
-        cycle_thread.start()
+        self.cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
+        self.cycle_thread.start()
+
+    def display_pin_values(self):
+        ''' Display the current pin values. '''
+        if self.cycle_thread and self.cycle_thread.is_alive():
+            while self.cycle_thread.is_alive():
+                for pin, pin_object in self.pins.items():
+                    print(f'{pin}: {pin_object.value}')
+                time.sleep(self.delay)
+
+    def get_values(self):
+        ''' Thread the display_pin_values method. '''
+        display_thread = threading.Thread(target=self.display_pin_values)
+        display_thread.start()
 
     def run_cycle(self):
         ''' Set the sequence for a run cycle. '''
         self.thread_sequence(
             ['run', 'rest'] + ['purge', 'burp'] * 6 + ['rest']
+        )
+
+    def functionality_test(self):
+        ''' Set the sequence for a functionality test. '''
+        self.thread_sequence(
+            ['run', 'purge'] * 5 + ['rest']
         )
