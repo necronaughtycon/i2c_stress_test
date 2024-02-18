@@ -85,6 +85,7 @@ class MCP:
         ''' Display the current pin values. '''
         if self.cycle_thread and self.cycle_thread.is_alive():
             while self.cycle_thread.is_alive():
+                print('\n')
                 for pin, pin_object in self.pins.items():
                     print(f'{pin}: {pin_object.value}')
                 time.sleep(self.delay)
