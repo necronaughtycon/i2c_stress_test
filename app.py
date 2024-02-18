@@ -84,7 +84,7 @@ class ADCTestScreen(MDScreen):
         self.show_adc_dialog()
         delay = self.frequency / self.requests
         self.adc = ADC(delay=delay)
-        self.adc_task = Clock.schedule_interval(self.update_adc_information, 1/60)
+        self.adc_task = Clock.schedule_interval(self.update_adc_information, 1)
         self.show_adc_dialog()
 
     def update_adc_information(self, *args):
@@ -102,9 +102,12 @@ class ADCTestScreen(MDScreen):
         ''' Check for missed payloads in the ADC test. '''
         total_requests = self.adc.get_requests_filled()
         duration = self.adc.get_duration()
-        print(duration, self.frequency)
-        expected_total = (duration / self.frequency) * self.requests
-        print(f'Expected: {expected_total}, Actual: {total_requests}')
+        expected_total = (int(duration) / self.frequency) * self.requests
+        difference = int(expected_total) - total_requests
+        if difference > 1:
+            print(f'Missed Payloads: {difference}')
+        else:
+            print(f'Missed Payloads: 0')
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
