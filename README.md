@@ -10,6 +10,7 @@ python3 -m venv venv
 source venv/bin/activate
 pip3 install adafruit-blinka
 pip3 install adafruit-circuitpython-ads1x15
+pip3 install adafruit-circuitpython-mcp230xx
 pip3 install https://github.com/T-Dynamos/materialyoucolor-python/archive/main.zip
 pip3 install https://github.com/kivymd/KivyMD/archive/master.zip
 ```
