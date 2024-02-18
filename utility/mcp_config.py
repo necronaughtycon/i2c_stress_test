@@ -32,71 +32,56 @@ class MCP:
         i2c = busio.I2C(board.SCL, board.SDA)
         self._mcp = MCP23017(i2c)
         self._hardware_initialized = True
-        self.motor = self._mcp.get_pin(0)
-        self.v1 = self._mcp.get_pin(1)
-        self.v2 = self._mcp.get_pin(2)
-        self.v5 = self._mcp.get_pin(3)
-        self.shutdown = self._mcp.get_pin(4)
-        self.tls = self._mcp.get_pin(8)
-        self.panel_power = self._mcp.get_pin(10)
+        self.pins = {
+            'motor': self._mcp.get_pin(0),
+            'v1': self._mcp.get_pin(1),
+            'v2': self._mcp.get_pin(2),
+            'v5': self._mcp.get_pin(3),
+            'shutdown': self._mcp.get_pin(4),
+            'tls': self._mcp.get_pin(8),
+            'panel_power': self._mcp.get_pin(10)
+        }
         self.setup_pins()
 
     def setup_pins(self):
         ''' Setup the MCP23017 pins. '''
         if self._hardware_initialized:
-            self.motor.direction = Direction.OUTPUT
-            self.v1.direction = Direction.OUTPUT
-            self.v2.direction = Direction.OUTPUT
-            self.v5.direction = Direction.OUTPUT
-            self.shutdown.direction = Direction.OUTPUT
-            self.tls.direction = Direction.INPUT
-            self.panel_power.direction = Direction.INPUT
+            for pin in ['motor', 'v1', 'v2', 'v5', 'shutdown']:
+                self.pins[pin].direction = Direction.OUTPUT
+            for pin in ['tls', 'panel_power']:
+                self.pins[pin].direction = Direction.INPUT
 
     def set_delay(self, delay):
         ''' Set the delay between each cycle. '''
         self.delay = delay
 
-    def relay_on(self, relay):
-        ''' Turn on the specified relay. '''
-        relay.value = True
-
-    def relay_off(self, relay):
-        ''' Turn off the specified relay. '''
-        relay.value = False
-
-    def run(self):
-        ''' Set the pins for run mode. '''
-        self.relay_on(self.motor)
-        self.relay_on(self.v1)
-        self.relay_off(self.v2)
-        self.relay_on(self.v5)
-
-    def rest(self):
-        ''' Set the pins for rest mode. '''
-        self.relay_off(self.motor)
-        self.relay_off(self.v1)
-        self.relay_off(self.v2)
-        self.relay_off(self.v5)
-
-    def purge(self):
-        ''' Set the pins for purge mode. '''
-        self.relay_on(self.motor)
-        self.relay_off(self.v1)
-        self.relay_on(self.v2)
-        self.relay_off(self.v5)
-
-    def burp(self):
-        ''' Set the pins for burp mode. '''
-        self.relay_off(self.motor)
-        self.relay_off(self.v1)
-        self.relay_off(self.v2)
-        self.relay_on(self.v5)
+    def set_mode(self, mode):
+        ''' Set the pins for the specified mode. '''
+        modes = {
+            'run': {'motor': True, 'v1': True, 'v2': False, 'v5': True},
+            'rest': {'motor': False, 'v1': False, 'v2': False, 'v5': False},
+            'purge': {'motor': True, 'v1': False, 'v2': True, 'v5': False},
+            'burp': {'motor': False, 'v1': False, 'v2': False, 'v5': True}
+        }
+        if mode in modes:
+            for pin, value in modes[mode].items():
+                self.pins[pin].value = value
+        else:
+            print(f'Invalid mode: {mode}')
 
     def set_sequence(self, sequence):
         ''' Set the pins for the specified sequence. '''
         for mode in sequence:
-            if hasattr(self, mode):
-                getattr(self, mode)()
-                time.sleep(self.delay)
-            else:
-                print(f'Invalid mode: {mode}')
+            self.set_mode(mode)
+            time.sleep(self.delay)
+
+    def thread_sequence(self, sequence):
+        ''' Run the specified sequence in a new thread. '''
+        cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
+        cycle_thread.start()
+
+    def run_cycle(self):
+        ''' Set the sequence for a run cycle. '''
+        self.thread_sequence(
+            ['run', 'rest'] + ['purge', 'burp'] * 6 + ['rest']
+        )
