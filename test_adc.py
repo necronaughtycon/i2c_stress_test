@@ -1,9 +1,5 @@
-requests = 100
-frequency = 1
-delay = frequency / requests
-print(delay)
+from utility import MCP
 
-elapsed = 60
-requests_filled = 500
-print(requests_filled / elapsed)
-
+mcp = MCP()
+mcp.set_delay(1)
+mcp.run_cycle()
