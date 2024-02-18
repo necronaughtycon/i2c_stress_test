@@ -10,8 +10,8 @@ Usage Example:
 
 from adc_config import ADC
 
-# Create an instance of the ADC class with delay.
-adc = ADC(delay=0.1)
+# Create an instance of the ADC class.
+adc = ADC()
 '''
 
 import threading
@@ -34,10 +34,9 @@ class ADC:
     This class is used to interface with the ADS1115 Analog-to-Digital Converter.
     '''
 
-    def __init__(self, gain=1, delay=0.1):
+    def __init__(self, gain=1):
         self.payload = None
         self.requests_filled = 0
-        self.delay = delay
         self.start_time = None
         self.end_time = None
         self._thread = None
@@ -59,7 +58,6 @@ class ADC:
         while not self._stop_event.is_set():
             self.read_adc()
             self.requests_filled += 1
-            time.sleep(self.delay)
             self.end_time = time.time()
 
     def read_adc(self) -> str:

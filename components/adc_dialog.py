@@ -30,6 +30,7 @@ class ADCDialog:
         # Content setup.
         self.requests = MDListItemSupportingText(text='Payload Size: 0', halign='center')
         self.requests_filled = MDListItemSupportingText(text='Requests Received: 0', halign='center')
+        self.requests_missed = MDListItemSupportingText(text='Missed Payloads: 0', halign='center')
         self.last_payload = MDListItemSupportingText(text='Last Payload: None', halign='center')
         self.progress = MDCircularProgressIndicator(
             size_hint=(None, None), size=('40dp', '40dp'),
@@ -41,6 +42,7 @@ class ADCDialog:
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDListItem(self.requests))
         self.container.add_widget(MDListItem(self.requests_filled))
+        self.container.add_widget(MDListItem(self.requests_missed))
         self.container.add_widget(MDListItem(self.last_payload))
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDBoxLayout(size_hint_y=None, height='20dp'))
@@ -73,9 +75,10 @@ class ADCDialog:
         container = MDDialogContentContainer(orientation='vertical')
         return container
 
-    def update_information(self, requests, requests_filled, last_payload):
+    def update_information(self, requests, requests_filled, requests_missed, last_payload):
         self.requests.text = f'Payload Size: {requests}'
         self.requests_filled.text = f'Requests Received: {requests_filled}'
+        self.requests_missed.text = f'Missed Payloads: {requests_missed}'
         self.last_payload.text = f'Last Payload: {last_payload}'
     
     def open(self):
@@ -93,6 +96,7 @@ class ADCResults:
         # Content setup.
         self.payload = MDListItemSupportingText(text='Payload Size:', halign='center')
         self.requests_filled = MDListItemSupportingText(text='Requests Received:', halign='center')
+        self.missed_requests = MDListItemSupportingText(text='Total Missed:', halign='center')
         self.bus_status = MDListItemSupportingText(text='Bus Status:', halign='center')
         self.progress = MDCircularProgressIndicator(
             size_hint=(None, None), size=('40dp', '40dp'),
@@ -104,6 +108,7 @@ class ADCResults:
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDListItem(self.payload))
         self.container.add_widget(MDListItem(self.requests_filled))
+        self.container.add_widget(MDListItem(self.missed_requests))
         self.container.add_widget(MDListItem(self.bus_status))
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDBoxLayout(size_hint_y=None, height='20dp'))
@@ -136,9 +141,10 @@ class ADCResults:
         container = MDDialogContentContainer(orientation='vertical')
         return container
 
-    def update_status(self, payload, requests_filled, status):
+    def update_status(self, payload, requests_filled, missed_requests, status):
         self.payload.text = f'Payload Size: {payload}'
         self.requests_filled.text = f'Requests Received: {requests_filled}'
+        self.missed_requests.text = f'Total Missed: {missed_requests}'
         self.bus_status.text = f'Bus Status: {status}'
         if 'ok' in status.lower():
             self.result.icon = 'check-circle-outline'

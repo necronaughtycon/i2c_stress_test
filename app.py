@@ -64,6 +64,7 @@ class ADCTestScreen(MDScreen):
     requests = NumericProperty()
     frequency = NumericProperty()
     requests_filled = NumericProperty()
+    missed_requests = NumericProperty()
     bus_status = StringProperty('OK')
     last = NumericProperty()
     adc_task = None
@@ -81,9 +82,8 @@ class ADCTestScreen(MDScreen):
     def schedule_adc(self):
         ''' Schedule the intervals for the ADC test. '''
         self.show_adc_dialog()
-        delay = self.frequency / self.requests
-        self.adc = ADC(delay=delay)
-        self.adc_task = Clock.schedule_interval(self.update_adc_information, 1)
+        self.adc = ADC()
+        self.adc_task = Clock.schedule_interval(self.update_adc_information, 1/60)
         self.show_adc_dialog()
 
     def update_adc_information(self, *args):
@@ -92,7 +92,7 @@ class ADCTestScreen(MDScreen):
         if payload is not None:
             self.requests_filled = self.adc.get_requests_filled()
             self.check_missed_payloads_adc()
-            self.adc_dialog.update_information(self.requests, self.requests_filled, payload)
+            self.adc_dialog.update_information(self.requests, self.requests_filled, self.missed_requests, payload)
         else:
             self.bus_status = 'FAILED'
             self.stop_adc_test()
@@ -104,9 +104,9 @@ class ADCTestScreen(MDScreen):
         expected_total = (int(duration) / self.frequency) * self.requests
         difference = int(expected_total) - total_requests
         if difference > 1:
-            print(f'Missed Payloads: {difference}')
+            self.missed_requests = difference
         else:
-            print(f'Missed Payloads: 0')
+            self.missed_requests = 0
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
@@ -120,7 +120,7 @@ class ADCTestScreen(MDScreen):
         ''' Display the results of the ADC test. '''
         if not hasattr(self, 'adc_results'):
             self.adc_results = ADCResults(self)
-        self.adc_results.update_status(self.requests, self.requests_filled, self.bus_status)
+        self.adc_results.update_status(self.requests, self.requests_filled, self.missed_requests, self.bus_status)
         self.adc_results.open()
 
     def stop_adc_test(self, instance=None):
@@ -130,10 +130,6 @@ class ADCTestScreen(MDScreen):
             self.adc_task = None
             if hasattr(self, 'adc_dialog'):
                 self.adc_dialog.close()
-        if self.adc_missed_task:
-            self.adc_missed_task.cancel()
-            self.adc_missed_task = None
-            self.adc_last = 0
         if hasattr(self, 'adc'):
             self.adc.stop()
         self.show_adc_results()
