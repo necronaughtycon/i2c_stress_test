@@ -67,7 +67,6 @@ class ADCTestScreen(MDScreen):
     bus_status = StringProperty('OK')
     last = NumericProperty()
     adc_task = None
-    adc_missed_task = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
