@@ -26,6 +26,7 @@ class MCP:
 
     def __init__(self):
         self.delay = None
+        self.mode = None
         self._hardware_initialized = False
         if busio is None or board is None or MCP23017 is None:
             return
@@ -41,8 +42,9 @@ class MCP:
             'tls': self._mcp.get_pin(8),
             'panel_power': self._mcp.get_pin(10)
         }
-        self.setup_pins()
         self.cycle_thread = None
+        self.setup_pins()
+        self.set_mode('rest')
 
     def setup_pins(self):
         ''' Setup the MCP23017 pins. '''
@@ -65,6 +67,7 @@ class MCP:
             'burp': {'motor': False, 'v1': False, 'v2': False, 'v5': True}
         }
         if mode in modes:
+            self.mode = mode
             for pin, value in modes[mode].items():
                 self.pins[pin].value = value
         else:
@@ -72,28 +75,39 @@ class MCP:
 
     def set_sequence(self, sequence):
         ''' Set the pins for the specified sequence. '''
-        for mode in sequence:
-            self.set_mode(mode)
-            time.sleep(self.delay)
+        try:
+            for mode in sequence:
+                self.set_mode(mode)
+                time.sleep(self.delay)
+        except KeyboardInterrupt:
+            self.set_mode('rest')
+        finally:
+            self.set_mode('rest')
+            self.mode = 'Complete'
 
     def thread_sequence(self, sequence):
         ''' Run the specified sequence in a new thread. '''
-        self.cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
-        self.cycle_thread.start()
+        if self._hardware_initialized:
+            self.cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
+            self.cycle_thread.start()
+        else:
+            return 'ERR'
 
-    def display_pin_values(self):
-        ''' Display the current pin values. '''
-        if self.cycle_thread and self.cycle_thread.is_alive():
-            while self.cycle_thread.is_alive():
-                print('\n')
-                for pin, pin_object in self.pins.items():
-                    print(f'{pin}: {pin_object.value}')
-                time.sleep(self.delay)
+    def get_values(self) -> str:
+        ''' Return the values of the motor, v1, v2, and v5 pins. '''
+        pin_values = {
+            'motor': self.pins['motor'].value,
+            'v1': self.pins['v1'].value,
+            'v2': self.pins['v2'].value,
+            'v5': self.pins['v5'].value
+        }
+        state = {pin: 'on' if status else 'off' for pin, status in pin_values.items()}
+        values = f'MTR: {state["motor"]}  |  V1: {state["v1"]}  |  V2: {state["v2"]}  |  V5: {state["v5"]}'
+        return values
 
-    def get_values(self):
-        ''' Thread the display_pin_values method. '''
-        display_thread = threading.Thread(target=self.display_pin_values)
-        display_thread.start()
+    def get_mode(self) -> str:
+        ''' Return the current mode. '''
+        return self.mode
 
     def run_cycle(self):
         ''' Set the sequence for a run cycle. '''

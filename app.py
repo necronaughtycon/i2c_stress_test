@@ -16,8 +16,8 @@ from kivymd.uix.screen import MDScreen
 import settings.kivy_config
 
 # Local imports.
-from components import ADCDialog, ADCResults
-from utility import ADC
+from components import ADCDialog, ADCResults, MCPDialog, MCPResults
+from utility import ADC, MCP
 
 
 class StressTestApp(MDApp):
@@ -81,7 +81,6 @@ class ADCTestScreen(MDScreen):
 
     def schedule_adc(self):
         ''' Schedule the intervals for the ADC test. '''
-        self.show_adc_dialog()
         self.adc = ADC()
         self.adc_task = Clock.schedule_interval(self.update_adc_information, 1/60)
         self.show_adc_dialog()
@@ -137,7 +136,78 @@ class ADCTestScreen(MDScreen):
 
 class MCPTestScreen(MDScreen):
     ''' MCP test screen. '''
-    pass
+
+    delay = NumericProperty()
+    function = StringProperty()
+    bus_status = StringProperty('OK')
+    mcp_task = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.mcp = None
+
+    def start_run_cycle(self, delay):
+        ''' Start run cycle with custom delay. '''
+        self.delay = int(delay)
+        self.function = 'Run Cycle'
+        self.mcp = MCP()
+        self.schedule_mcp()
+        self.mcp.set_delay(self.delay)
+        self.mcp.run_cycle()
+
+    def start_functionality_test(self, delay):
+        ''' Start functionality test with custom delay. '''
+        self.delay = int(delay)
+        self.function = 'Functionality Test'
+        self.mcp = MCP()
+        self.schedule_mcp()
+        self.mcp.set_delay(self.delay)
+        self.mcp.functionality_test()
+
+    def schedule_mcp(self):
+        ''' Schedule the intervals for checking values of the MCP test. '''
+        self.mcp_task = Clock.schedule_interval(self.update_mcp_information, 1)
+        self.show_mcp_dialog()        
+
+    def update_mcp_information(self, *args):
+        ''' Get relay values in real time. '''
+        mode = self.mcp.get_mode()
+        pin_values = self.mcp.get_values()
+        if mode is not None:
+            if mode == 'Complete':
+                self.bus_status = 'OK'
+                self.stop_mcp_test()
+            else:
+                self.mcp_dialog.update_information(self.function, mode.capitalize(), pin_values, self.delay)
+        else:
+            self.bus_status = 'FAILED'
+            self.stop_mcp_test()
+
+    def show_mcp_dialog(self):
+        ''' Display a dialog with live statistics for the ongoing MCP test. '''
+        if not hasattr(self, 'mcp_dialog'):
+            self.mcp_dialog = MCPDialog(self)
+            self.mcp_dialog.button.bind(on_press=self.stop_mcp_test)
+            self.mcp_dialog.dialog.bind(on_dismiss=self.stop_mcp_test)
+        self.mcp_dialog.open()
+
+    def show_mcp_results(self):
+        ''' Display the results of the MCP test. '''
+        if not hasattr(self, 'mcp_results'):
+            self.mcp_results = MCPResults(self)
+        self.mcp_results.update_status(self.function, self.bus_status)
+        self.mcp_results.open()
+   
+    def stop_mcp_test(self, instance=None):
+        ''' Stop and unschedule the MCP test. '''
+        if self.mcp_task:
+            self.mcp_task.cancel()
+            self.mcp_task = None
+            if hasattr(self, 'mcp_dialog'):
+                self.mcp_dialog.close()
+            if hasattr(self, 'mcp'):
+                self.mcp.set_mode('rest')
+            self.show_mcp_results()
 
 
 if __name__ == '__main__':
