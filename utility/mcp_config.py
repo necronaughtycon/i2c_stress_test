@@ -43,6 +43,7 @@ class MCP:
             'panel_power': self._mcp.get_pin(10)
         }
         self.cycle_thread = None
+        self._stop_thread = threading.Event()
         self.setup_pins()
         self.set_mode('rest')
 
@@ -77,6 +78,8 @@ class MCP:
         ''' Set the pins for the specified sequence. '''
         try:
             for mode in sequence:
+                if self._stop_thread.is_set():
+                    break
                 self.set_mode(mode)
                 time.sleep(self.delay)
         except KeyboardInterrupt:
@@ -88,6 +91,7 @@ class MCP:
     def thread_sequence(self, sequence):
         ''' Run the specified sequence in a new thread. '''
         if self._hardware_initialized:
+            self._stop_thread.clear()
             self.cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
             self.cycle_thread.start()
         else:
@@ -120,3 +124,10 @@ class MCP:
         self.thread_sequence(
             ['run', 'purge'] * 5 + ['rest']
         )
+
+    def stop_cycle(self):
+        ''' Stop the current sequence. '''
+        if self.cycle_thread and self.cycle_thread.is_alive():
+            self._stop_thread.set()
+            self.cycle_thread.join()
+            self.cycle_thread = None

@@ -206,6 +206,7 @@ class MCPTestScreen(MDScreen):
             if hasattr(self, 'mcp_dialog'):
                 self.mcp_dialog.close()
             if hasattr(self, 'mcp'):
+                self.mcp.stop_cycle()
                 self.mcp.set_mode('rest')
             self.show_mcp_results()
 
