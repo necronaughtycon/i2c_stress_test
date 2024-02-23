@@ -137,7 +137,8 @@ class ADCTestScreen(MDScreen):
 class MCPTestScreen(MDScreen):
     ''' MCP test screen. '''
 
-    delay = NumericProperty()
+    cycle_delay = NumericProperty()
+    pin_delay = NumericProperty()
     function = StringProperty()
     bus_status = StringProperty('OK')
     mcp_task = None
@@ -146,23 +147,35 @@ class MCPTestScreen(MDScreen):
         super().__init__(**kwargs)
         self.mcp = None
 
-    def start_run_cycle(self, delay):
+    def set_delays(self, cycle_delay, pin_delay):
+        ''' Set custom delay times. '''
+        self.cycle_delay = cycle_delay
+        self.pin_delay = pin_delay
+        self.mcp.set_cycle_delay(self.cycle_delay)
+
+    def start_run_cycle(self, cycle_delay, pin_delay):
         ''' Start run cycle with custom delay. '''
-        self.delay = int(delay)
         self.function = 'Run Cycle'
         self.mcp = MCP()
+        self.set_delays(cycle_delay, pin_delay)
         self.schedule_mcp()
-        self.mcp.set_delay(self.delay)
         self.mcp.run_cycle()
 
-    def start_functionality_test(self, delay):
+    def start_functionality_test(self, cycle_delay, pin_delay):
         ''' Start functionality test with custom delay. '''
-        self.delay = int(delay)
         self.function = 'Functionality Test'
         self.mcp = MCP()
+        self.set_delays(cycle_delay, pin_delay)
         self.schedule_mcp()
-        self.mcp.set_delay(self.delay)
         self.mcp.functionality_test()
+
+    def start_test_mode(self, cycle_delay, pin_delay):
+        ''' Start test mode with custom delay. '''
+        self.function = 'Test Mode'
+        self.mcp = MCP()
+        self.set_delays(cycle_delay, pin_delay)
+        self.schedule_mcp()
+        self.mcp.test_mode()
 
     def schedule_mcp(self):
         ''' Schedule the intervals for checking values of the MCP test. '''

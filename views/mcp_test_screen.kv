@@ -43,13 +43,31 @@
                     ValueField:
                         text: str(round(mcp_delay.value))
                         icon: 'timer-refresh'
-                        field: 'Delay (seconds)'
-                        on_text: mcp_delay.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
+                        field: 'Cycle Delay (seconds)'
+                        on_text: mcp_cycle_delay.value = min(max(int(self.text), 1), 120) if self.text.isdigit() else 0
                     MDSlider:
-                        id: mcp_delay
-                        range: (1, 60)
+                        id: mcp_cycle_delay
+                        range: (1, 120)
                         MDSliderHandle:
                         MDSliderValueLabel:
+
+                    ValueField:
+                        text: str(round(mcp_delay.value))
+                        icon: 'timer-refresh'
+                        field: 'Pin Delay (milliseconds)'
+                        on_text: mcp_pin_delay.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
+                    MDSlider:
+                        id: mcp_pin_delay
+                        range: (1, 1000)
+                        MDSliderHandle:
+                        MDSliderValueLabel:
+
+                MDGridLayout:
+                    cols: 2
+                    spacing: dp(24)
+                    padding: (dp(125), dp(0), dp(125), dp(0))
+                    adaptive_height: True
+                    pos_hint: {'center_x': .5, 'center_y': .5}
 
                     MDButton:
                         style: 'elevated'
@@ -58,7 +76,7 @@
                         height: dp(48)
                         size_hint_x: 1
                         radius: 7
-                        on_press: mcp_test_screen.start_run_cycle(mcp_delay.value)
+                        on_press: mcp_test_screen.start_run_cycle(mcp_cycle_delay.value, mcp_pin_delay.value)
                         MDButtonText:
                             text: 'Run Cycle'
                             font_style: 'Title'
@@ -72,7 +90,7 @@
                         height: dp(48)
                         size_hint_x: 1
                         radius: 7
-                        on_press: mcp_test_screen.start_functionality_test(mcp_delay.value)
+                        on_press: mcp_test_screen.start_functionality_test(mcp_delay.value, mcp_pin_delay.value)
                         MDButtonText:
                             text: 'Functionality Test'
                             font_style: 'Title'

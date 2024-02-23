@@ -25,7 +25,8 @@ class MCP:
     '''
 
     def __init__(self):
-        self.delay = None
+        self.pin_delay = None
+        self.cycle_delay = None
         self.mode = None
         self._hardware_initialized = False
         if busio is None or board is None or MCP23017 is None:
@@ -47,6 +48,14 @@ class MCP:
         self.setup_pins()
         self.set_mode('rest')
 
+    def set_pin_delay(self, pin_delay):
+        ''' Set the delay between each pin setup.'''
+        self.pin_delay = pin_delay
+
+    def set_cycle_delay(self, cycle_delay):
+        ''' Set the delay between each cycle. '''
+        self.cycle_delay = cycle_delay
+
     def setup_pins(self):
         ''' Setup the MCP23017 pins. '''
         if self._hardware_initialized:
@@ -55,22 +64,21 @@ class MCP:
             for pin in ['tls', 'panel_power']:
                 self.pins[pin].direction = Direction.INPUT
 
-    def set_delay(self, delay):
-        ''' Set the delay between each cycle. '''
-        self.delay = delay
-
     def set_mode(self, mode):
         ''' Set the pins for the specified mode. '''
         modes = {
             'run': {'motor': True, 'v1': True, 'v2': False, 'v5': True},
             'rest': {'motor': False, 'v1': False, 'v2': False, 'v5': False},
             'purge': {'motor': True, 'v1': False, 'v2': True, 'v5': False},
-            'burp': {'motor': False, 'v1': False, 'v2': False, 'v5': True}
+            'burp': {'motor': False, 'v1': False, 'v2': False, 'v5': True},
+            'bleed': {'motor': False, 'v1': False, 'v2': True, 'v5': True},
+            'leak': {'motor': False, 'v1': True, 'v2': True, 'v5': True}
         }
         if mode in modes:
             self.mode = mode
             for pin, value in modes[mode].items():
                 self.pins[pin].value = value
+                time.sleep(self.pin_delay)
         else:
             print(f'Invalid mode: {mode}')
 
@@ -81,7 +89,7 @@ class MCP:
                 if self._stop_thread.is_set():
                     break
                 self.set_mode(mode)
-                time.sleep(self.delay)
+                time.sleep(self.cycle_delay)
         except KeyboardInterrupt:
             self.set_mode('rest')
         finally:
@@ -90,23 +98,26 @@ class MCP:
 
     def thread_sequence(self, sequence):
         ''' Run the specified sequence in a new thread. '''
-        if self._hardware_initialized:
-            self._stop_thread.clear()
-            self.cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
-            self.cycle_thread.start()
-        else:
+        if not self._hardware_initialized:
             return 'ERR'
+        self._stop_thread.clear()
+        self.cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
+        self.cycle_thread.start()
+        return 'OK'
 
     def get_values(self) -> str:
         ''' Return the values of the motor, v1, v2, and v5 pins. '''
-        pin_values = {
-            'motor': self.pins['motor'].value,
-            'v1': self.pins['v1'].value,
-            'v2': self.pins['v2'].value,
-            'v5': self.pins['v5'].value
-        }
+        pin_values = {}
+        for pin in ['motor', 'v1', 'v2', 'v5']:
+            pin_values[pin] = self.pins[pin].value
+            time.sleep(self.pin_delay)
         state = {pin: 'on' if status else 'off' for pin, status in pin_values.items()}
-        values = f'MTR: {state["motor"]}  |  V1: {state["v1"]}  |  V2: {state["v2"]}  |  V5: {state["v5"]}'
+        values = (
+            f'MTR: {state["motor"]}  |  '
+            f'V1: {state["v1"]}  |  '
+            f'V2: {state["v2"]}  |  '
+            f'V5: {state["v5"]}'
+        )
         return values
 
     def get_mode(self) -> str:
@@ -123,6 +134,18 @@ class MCP:
         ''' Set the sequence for a functionality test. '''
         self.thread_sequence(
             ['run', 'purge'] * 5 + ['rest']
+        )
+
+    def test_mode(self):
+        ''' Set the sequence for a test mode. '''
+        self.thread_sequence(
+            ['run', 'rest'] * 2 + ['purge', 'bleed']
+        )
+
+    def leak_test(self):
+        ''' Set the sequence for a leak test. '''
+        self.thread_sequence(
+            ['leak']
         )
 
     def stop_cycle(self):
