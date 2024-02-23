@@ -34,10 +34,9 @@ class ADC:
     This class is used to interface with the ADS1115 Analog-to-Digital Converter.
     '''
 
-    def __init__(self, gain=1, delay=0):
+    def __init__(self, gain=1, requests=0, delay=0):
         self.payload = None
         self.requests_filled = 0
-        self.delay = delay
         self.start_time = None
         self.end_time = None
         self._thread = None
@@ -61,7 +60,6 @@ class ADC:
             self.read_adc()
             self.requests_filled += 1
             self.end_time = time.time()
-            time.sleep(self.delay)
 
     def read_adc(self) -> str:
         ''' Send request to ADC. '''
@@ -75,7 +73,7 @@ class ADC:
     def get_requests_filled(self) -> int:
         ''' Get the amount of requests filled. '''
         return self.requests_filled
-    
+ 
     def get_payload(self) -> str:
         ''' Get the payload from the ADC. '''
         return str(self.payload)

@@ -81,7 +81,7 @@ class ADCTestScreen(MDScreen):
 
     def schedule_adc(self):
         ''' Schedule the intervals for the ADC test. '''
-        self.adc = ADC(delay=self.frequency)
+        self.adc = ADC()
         self.adc_task = Clock.schedule_interval(self.update_adc_information, 1/60)
         self.show_adc_dialog()
 
@@ -89,7 +89,6 @@ class ADCTestScreen(MDScreen):
         ''' Update the ADC info on screen. '''
         payload = self.adc.get_payload()
         if payload is not None:
-            self.requests_filled = self.adc.get_requests_filled()
             self.check_missed_payloads_adc()
             self.adc_dialog.update_information(self.requests, self.requests_filled, self.missed_requests, payload)
         else:
@@ -102,10 +101,12 @@ class ADCTestScreen(MDScreen):
         duration = self.adc.get_duration()
         expected_total = (int(duration) / self.frequency) * self.requests
         difference = int(expected_total) - total_requests
-        if difference > 1:
+        if expected_total > total_requests:
             self.missed_requests = difference
+            self.requests_filled = int(total_requests)
         else:
             self.missed_requests = 0
+            self.requests_filled = int(expected_total)
 
     def show_adc_dialog(self):
         ''' Display a dialog with live statistics for the ongoing ADC test. '''
@@ -238,7 +239,6 @@ class MCPTestScreen(MDScreen):
                 self.mcp_dialog.close()
             if hasattr(self, 'mcp'):
                 self.mcp.stop_cycle()
-                self.mcp.set_mode('rest')
             self.show_mcp_results()
 
 

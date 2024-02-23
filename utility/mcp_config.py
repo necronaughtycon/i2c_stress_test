@@ -58,6 +58,13 @@ class MCP:
         ''' Set the delay between each cycle. '''
         self.cycle_delay = cycle_delay
 
+    def sleep_with_check(self, delay):
+        ''' Sleep for the specified delay, checking for a stop event. '''
+        total_time = 0
+        while total_time < delay and not self._stop_cycle_thread.is_set():
+            time.sleep(0.01)
+            total_time += 0.01
+
     def setup_pins(self):
         ''' Setup the MCP23017 pins. '''
         if self._hardware_initialized:
@@ -89,7 +96,7 @@ class MCP:
                     break
                 self.pins[pin].value = value
                 if self.pin_delay:
-                    time.sleep(self.pin_delay)
+                    self.sleep_with_check(self.pin_delay)
         else:
             print(f'Invalid mode: {mode}')
 
@@ -101,7 +108,7 @@ class MCP:
                     break
                 self.thread_mode(mode)
                 if self.cycle_delay:
-                    time.sleep(self.cycle_delay)
+                    self.sleep_with_check(self.cycle_delay)
         except KeyboardInterrupt:
             self.set_mode('rest')
         finally:
@@ -111,11 +118,10 @@ class MCP:
     def thread_sequence(self, sequence):
         ''' Run the specified sequence in a new thread. '''
         if not self._hardware_initialized:
-            return 'ERR'
+            self.mode = None
         self._stop_cycle_thread.clear()
         self.cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
         self.cycle_thread.start()
-        return 'OK'
 
     def get_values(self) -> str:
         ''' Return the values of the motor, v1, v2, and v5 pins. '''
@@ -161,6 +167,7 @@ class MCP:
             self.cycle_thread.join()
             self.cycle_thread = None
         self.stop_mode()
+        self.set_mode('rest')
 
     def stop_mode(self):
         ''' Stop the current mode. '''
