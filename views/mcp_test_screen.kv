@@ -44,10 +44,10 @@
                         text: str(round(mcp_pin_delay.value))
                         icon: 'timer-refresh'
                         field: 'Pin Delay (milliseconds)'
-                        on_text: mcp_pin_delay.value = min(max(int(self.text), 1), 1000) if self.text.isdigit() else 0
+                        on_text: mcp_pin_delay.value = min(max(int(self.text), 0), 1000) if self.text.isdigit() else 0
                     MDSlider:
                         id: mcp_pin_delay
-                        range: (1, 1000)
+                        range: (0, 1000)
                         MDSliderHandle:
                         MDSliderValueLabel:
 
