@@ -81,7 +81,7 @@ class ADCTestScreen(MDScreen):
 
     def schedule_adc(self):
         ''' Schedule the intervals for the ADC test. '''
-        self.adc = ADC()
+        self.adc = ADC(delay=self.frequency)
         self.adc_task = Clock.schedule_interval(self.update_adc_information, 1/60)
         self.show_adc_dialog()
 
@@ -147,35 +147,48 @@ class MCPTestScreen(MDScreen):
         super().__init__(**kwargs)
         self.mcp = None
 
-    def set_delays(self, cycle_delay, pin_delay):
+    def set_delays(self, pin_delay, cycle_delay):
         ''' Set custom delay times. '''
+        self.convert_to_ms(pin_delay)
         self.cycle_delay = cycle_delay
-        self.pin_delay = pin_delay
         self.mcp.set_cycle_delay(self.cycle_delay)
 
-    def start_run_cycle(self, cycle_delay, pin_delay):
+    def convert_to_ms(self, pin_delay):
+        ''' Convert seconds to milliseconds. '''
+        self.pin_delay = int(pin_delay) / 1000
+        self.mcp.set_pin_delay(self.pin_delay)
+
+    def start_run_cycle(self, pin_delay, cycle_delay):
         ''' Start run cycle with custom delay. '''
         self.function = 'Run Cycle'
         self.mcp = MCP()
-        self.set_delays(cycle_delay, pin_delay)
+        self.set_delays(pin_delay, cycle_delay)
         self.schedule_mcp()
         self.mcp.run_cycle()
 
-    def start_functionality_test(self, cycle_delay, pin_delay):
+    def start_functionality_test(self, pin_delay, cycle_delay):
         ''' Start functionality test with custom delay. '''
         self.function = 'Functionality Test'
         self.mcp = MCP()
-        self.set_delays(cycle_delay, pin_delay)
+        self.set_delays(pin_delay, cycle_delay)
         self.schedule_mcp()
         self.mcp.functionality_test()
 
-    def start_test_mode(self, cycle_delay, pin_delay):
+    def start_test_mode(self, pin_delay, cycle_delay):
         ''' Start test mode with custom delay. '''
         self.function = 'Test Mode'
         self.mcp = MCP()
-        self.set_delays(cycle_delay, pin_delay)
+        self.set_delays(pin_delay, cycle_delay)
         self.schedule_mcp()
         self.mcp.test_mode()
+
+    def start_leak_test(self, pin_delay, cycle_delay):
+        ''' Start leak test with custom delay. '''
+        self.function = 'Leak Test'
+        self.mcp = MCP()
+        self.set_delays(pin_delay, cycle_delay)
+        self.schedule_mcp()
+        self.mcp.leak_test()
 
     def schedule_mcp(self):
         ''' Schedule the intervals for checking values of the MCP test. '''
@@ -185,13 +198,18 @@ class MCPTestScreen(MDScreen):
     def update_mcp_information(self, *args):
         ''' Get relay values in real time. '''
         mode = self.mcp.get_mode()
-        pin_values = self.mcp.get_values()
+        motor, v1, v2, v5 = self.mcp.get_values()
         if mode is not None:
             if mode == 'Complete':
                 self.bus_status = 'OK'
                 self.stop_mcp_test()
             else:
-                self.mcp_dialog.update_information(self.function, mode.capitalize(), pin_values, self.delay)
+                self.mcp_dialog.update_information(
+                    self.function, mode.capitalize(),
+                    self.pin_delay, 
+                    self.cycle_delay,
+                    motor, v1, v2, v5
+                )
         else:
             self.bus_status = 'FAILED'
             self.stop_mcp_test()

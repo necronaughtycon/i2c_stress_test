@@ -14,12 +14,12 @@ from kivymd.uix.dialog import (
     MDDialogSupportingText,
 )
 from kivymd.uix.divider import MDDivider
+from kivymd.uix.label import MDLabel  # Add this line
 from kivymd.uix.list import (
     MDListItem,
     MDListItemLeadingIcon,
     MDListItemSupportingText,
 )
-from kivymd.uix.progressindicator.progressindicator import MDCircularProgressIndicator
 
 
 class MCPDialog:
@@ -30,24 +30,33 @@ class MCPDialog:
         # Content setup.
         self.function = MDListItemSupportingText(text='Function: None', halign='center')
         self.mode = MDListItemSupportingText(text='Mode: None', halign='center')
-        self.delay = MDListItemSupportingText(text='Delay: 0', halign='center')
-        self.pin_values = MDListItemSupportingText(text='MTR: off  |  V1: off  |  V2: off  |  V5: off', halign='center')
-        self.progress = MDCircularProgressIndicator(
-            size_hint=(None, None), size=('40dp', '40dp'),
-            pos_hint={'center_x': .5, 'center_y': .1}
-        )
+        self.pin_delay = MDListItemSupportingText(text='Pin Delay: 0', halign='center')
+        self.cycle_delay = MDListItemSupportingText(text='Cycle Delay: 0', halign='center')
+        self.motor = MDLabel(text='MOTOR', halign='center', theme_text_color='Custom', text_color='white', opacity=0.5)
+        self.v1 = MDLabel(text='V1', halign='center', theme_text_color='Custom', text_color='white', opacity=0.5)
+        self.v2 = MDLabel(text='V2', halign='center', theme_text_color='Custom', text_color='white', opacity=0.5)
+        self.v5 = MDLabel(text='V5', halign='center', theme_text_color='Custom', text_color='white', opacity=0.5)
+        
  
+        # Pin value setup.
+        self.value_container = MDBoxLayout(orientation='horizontal', size_hint_y=None, height='20dp')
+        self.value_container.add_widget(self.motor)
+        self.value_container.add_widget(self.v1)
+        self.value_container.add_widget(self.v2)
+        self.value_container.add_widget(self.v5)
+        
         # Container setup.
         self.container = self._create_container()
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDListItem(self.function))
         self.container.add_widget(MDListItem(self.mode))
-        self.container.add_widget(MDListItem(self.pin_values))
-        self.container.add_widget(MDListItem(self.delay))
+        self.container.add_widget(MDListItem(self.pin_delay))
+        self.container.add_widget(MDListItem(self.cycle_delay))
+        self.container.add_widget(MDDivider())
+        self.container.add_widget(Widget(size_hint_x=.25))
+        self.container.add_widget(self.value_container)
         self.container.add_widget(MDDivider())
         self.container.add_widget(MDBoxLayout(size_hint_y=None, height='20dp'))
-        self.container.add_widget(self.progress)
-
 
         # Button setup.
         self.button_container = MDDialogButtonContainer()
@@ -66,7 +75,7 @@ class MCPDialog:
         
         # Dialog setup.
         self.dialog = MDDialog(
-            MDDialogHeadlineText(text='Live ADC Test Statistics'),
+            MDDialogHeadlineText(text='Live MCP Test Statistics'),
             self.container,
             self.button_container
         )
@@ -75,11 +84,36 @@ class MCPDialog:
         container = MDDialogContentContainer(orientation='vertical')
         return container
 
-    def update_information(self, function, mode, values, delay):
+    def update_information(self, function, mode, pin_delay, cycle_delay, motor, v1, v2, v5):
         self.function.text = f'Function: {function}'
         self.mode.text = f'Mode: {mode}'
-        self.pin_values.text = values
-        self.delay.text = f'Delay: {delay}'
+        self.pin_delay.text = f'Pin Delay: {pin_delay}'
+        self.cycle_delay.text = f'Cycle Delay: {cycle_delay}'
+        if motor:
+            self.motor.text_color = 'green'
+            self.motor.opacity = 1
+        else:
+            self.motor.text_color = 'white'
+            self.motor.opacity = 0.2
+        if v1:
+            self.v1.text_color = 'green'
+            self.v1.opacity = 1
+        else:
+            self.v1.text_color = 'white'
+            self.v1.opacity = 0.2
+        if v2:
+            self.v2.text_color = 'green'
+            self.v2.opacity = 1
+        else:
+            self.v2.text_color = 'white'
+            self.v2.opacity = 0.2
+        if v5:
+            self.v5.text_color = 'green'
+            self.v5.opacity = 1
+        else:
+            self.v5.text_color = 'white'
+            self.v5.opacity = 0.2
+
 
     
     def open(self):
@@ -97,10 +131,7 @@ class MCPResults:
         # Content setup.
         self.function = MDListItemSupportingText(text='Function:', halign='center')
         self.bus_status = MDListItemSupportingText(text='Bus Status:', halign='center')
-        self.progress = MDCircularProgressIndicator(
-            size_hint=(None, None), size=('40dp', '40dp'),
-            pos_hint={'center_x': .5, 'center_y': .1}
-        )
+
  
         # Container setup.
         self.container = self._create_container()

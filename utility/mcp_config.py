@@ -43,8 +43,10 @@ class MCP:
             'tls': self._mcp.get_pin(8),
             'panel_power': self._mcp.get_pin(10)
         }
+        self.mode_thread = None
         self.cycle_thread = None
-        self._stop_thread = threading.Event()
+        self._stop_mode_thread = threading.Event()
+        self._stop_cycle_thread = threading.Event()
         self.setup_pins()
         self.set_mode('rest')
 
@@ -64,6 +66,12 @@ class MCP:
             for pin in ['tls', 'panel_power']:
                 self.pins[pin].direction = Direction.INPUT
 
+    def thread_mode(self, mode):
+        ''' Run the mode in a new thread. '''
+        self._stop_mode_thread.clear()
+        self.mode_thread = threading.Thread(target=self.set_mode, args=(mode,))
+        self.mode_thread.start()
+
     def set_mode(self, mode):
         ''' Set the pins for the specified mode. '''
         modes = {
@@ -77,8 +85,11 @@ class MCP:
         if mode in modes:
             self.mode = mode
             for pin, value in modes[mode].items():
+                if self._stop_cycle_thread.is_set():
+                    break
                 self.pins[pin].value = value
-                time.sleep(self.pin_delay)
+                if self.pin_delay:
+                    time.sleep(self.pin_delay)
         else:
             print(f'Invalid mode: {mode}')
 
@@ -86,10 +97,11 @@ class MCP:
         ''' Set the pins for the specified sequence. '''
         try:
             for mode in sequence:
-                if self._stop_thread.is_set():
+                if self._stop_cycle_thread.is_set():
                     break
-                self.set_mode(mode)
-                time.sleep(self.cycle_delay)
+                self.thread_mode(mode)
+                if self.cycle_delay:
+                    time.sleep(self.cycle_delay)
         except KeyboardInterrupt:
             self.set_mode('rest')
         finally:
@@ -100,25 +112,18 @@ class MCP:
         ''' Run the specified sequence in a new thread. '''
         if not self._hardware_initialized:
             return 'ERR'
-        self._stop_thread.clear()
+        self._stop_cycle_thread.clear()
         self.cycle_thread = threading.Thread(target=self.set_sequence, args=(sequence,))
         self.cycle_thread.start()
         return 'OK'
 
     def get_values(self) -> str:
         ''' Return the values of the motor, v1, v2, and v5 pins. '''
-        pin_values = {}
-        for pin in ['motor', 'v1', 'v2', 'v5']:
-            pin_values[pin] = self.pins[pin].value
-            time.sleep(self.pin_delay)
-        state = {pin: 'on' if status else 'off' for pin, status in pin_values.items()}
-        values = (
-            f'MTR: {state["motor"]}  |  '
-            f'V1: {state["v1"]}  |  '
-            f'V2: {state["v2"]}  |  '
-            f'V5: {state["v5"]}'
-        )
-        return values
+        motor = self.pins['motor'].value
+        v1 = self.pins['v1'].value
+        v2 = self.pins['v2'].value
+        v5 = self.pins['v5'].value
+        return motor, v1, v2, v5
 
     def get_mode(self) -> str:
         ''' Return the current mode. '''
@@ -150,7 +155,16 @@ class MCP:
 
     def stop_cycle(self):
         ''' Stop the current sequence. '''
+        print('Stopping sequence')
         if self.cycle_thread and self.cycle_thread.is_alive():
-            self._stop_thread.set()
+            self._stop_cycle_thread.set()
             self.cycle_thread.join()
+            self.cycle_thread = None
+        self.stop_mode()
+
+    def stop_mode(self):
+        ''' Stop the current mode. '''
+        if self.mode_thread and self.mode_thread.is_alive():
+            self._stop_mode_thread.set()
+            self.mode_thread.join()
             self.cycle_thread = None
