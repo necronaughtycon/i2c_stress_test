@@ -167,7 +167,7 @@ class MCP:
             self.cycle_thread.join()
             self.cycle_thread = None
         self.stop_mode()
-        self.set_mode('rest')
+        self.set_rest()
 
     def stop_mode(self):
         ''' Stop the current mode. '''
@@ -175,3 +175,8 @@ class MCP:
             self._stop_mode_thread.set()
             self.mode_thread.join()
             self.cycle_thread = None
+
+    def set_rest(self):
+        ''' Set to rest mode. '''
+        for pin in ['motor', 'v1', 'v2', 'v5']:
+            self.pins[pin].value = False
