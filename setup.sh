@@ -11,7 +11,7 @@ chmod +x "${run_path}"
 sudo ln -s "${run_path}" /usr/local/bin/i2c-stress-test
 
 # Install dependencies using Requirements.txt.
-# pip3 install -r "${current_directory}/Requirements.txt"
+pip3 install -r "${current_directory}/Requirements.txt"
 
 # Setup Kivy configuration.
 python3 "${current_directory}/settings/kivy_config.py"
