@@ -1,7 +1,7 @@
 # I2C Stress Test App
 
 ## Introduction
-The I2C Stress Test App is a tool designed to stress test the I2C bus, particularly useful for ADC (Analog-to-Digital Converter) and MCP (Microchip Technology) related operations.
+The I2C Stress Test App is a tool designed to stress test the I2C bus, particularly useful for ADC (Analog-to-Digital Converter) and MCP (Microchip Technology) related operations. Specifically used for a project at work, but wanted to make it public just to showcase some work.
 
 ## Installation
 1. Make the setup script executable:
